@@ -1,19 +1,37 @@
-/* Container styling */
+/* Container styling with animation */
 .custom-login-container {
-  width: 500px; /* Width of the login box */
+  width: 600px; /* Increased width of the login box */
   margin: 100px auto;
   padding: 40px; /* Increased padding */
-  border: 1px solid #ddd;
+  border: 1px solid #b0e0e6; /* Lighter border color */
   border-radius: 50px; /* Smooth rounded corners for the container */
-  background-color: #ffffff;
+  background-color: #add8e6; /* Light blue background color */
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
   text-align: center;
+  opacity: 0;
+  animation: fadeIn 1s forwards; /* Fade-in animation on load */
 }
+
+/* Keyframe for fade-in effect */
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
 
 /* Adjust input group spacing and font sizes */
 .custom-input-group {
   margin-bottom: 25px; /* Increased margin */
   text-align: left;
+  transform: translateX(-30px);
+  animation: slideIn 0.5s ease-out forwards; /* Slide-in effect for inputs */
+}
+
+@keyframes slideIn {
+  to {
+    transform: translateX(0);
+  }
 }
 
 .custom-input-group label {
@@ -21,6 +39,15 @@
   margin-bottom: 8px; /* Increased spacing between label and input */
   font-weight: bold;
   font-size: 16px; /* Increased font size */
+  opacity: 0;
+  animation: fadeInLabel 1s 0.5s forwards; /* Fade-in label animation */
+  color: #4b4b4b; /* Darker gray for label text */
+}
+
+@keyframes fadeInLabel {
+  to {
+    opacity: 1;
+  }
 }
 
 .custom-input-group input {
@@ -28,56 +55,92 @@
   padding: 12px; /* Increased padding for inputs */
   margin-top: 5px;
   box-sizing: border-box;
-  border: 1px solid #ccc;
+  border: 1px solid #b0e0e6; /* Light border color */
   border-radius: 50px; /* Set rounded corners for inputs */
   font-size: 16px;
   outline: none; /* Removes default blue border */
   transition: border-color 0.3s ease; /* Smooth transition on focus */
+  opacity: 0;
+  animation: fadeInInput 1s 1s forwards; /* Fade-in input field animation */
+  background-color: #ffffff; /* White background for inputs */
+}
+
+@keyframes fadeInInput {
+  to {
+    opacity: 1;
+  }
 }
 
 .custom-input-group input:focus {
-  border-color: #5a67d8; /* Border color change on focus */
+  border-color: #88c0d0; /* Soft blue color on focus */
 }
 
-/* Error message styling */
+/* Error message styling with animation */
 .custom-error-message {
-  color: red;
+  color: #ff6f61; /* Soft red color for error message */
   margin-bottom: 20px;
   font-size: 15px;
+  opacity: 0;
+  animation: fadeInError 1s forwards; /* Fade-in effect for error messages */
 }
 
-/* Button styling */
+@keyframes fadeInError {
+  to {
+    opacity: 1;
+  }
+}
+
+/* Button styling with multi-color gradient */
 .custom-login-button {
   width: 100%;
   padding: 14px; /* Increased padding for the button */
   margin-top: 15px;
-  background-color: #e12454;
+  background: linear-gradient(45deg, #f06292, #ab47bc, #ff9800); /* Multi-color gradient */
   color: white;
   border: none;
   border-radius: 50px; /* Rounded corners to match input fields */
   cursor: pointer;
   font-size: 18px;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.3s ease; /* Smooth transition on hover */
+  opacity: 0;
+  animation: fadeInButton 1s 1.5s forwards; /* Fade-in button animation */
+}
+
+@keyframes fadeInButton {
+  to {
+    opacity: 1;
+  }
 }
 
 .custom-login-button:hover {
-  background-color: #434190;
+  background: linear-gradient(45deg, #ff9800, #f06292, #ab47bc); /* Reverse gradient on hover */
+  transform: translateY(-5px); /* Slight hover effect */
 }
 
 /* Styling for additional links */
 .custom-additional-links {
   margin-top: 20px; /* Increased margin */
+  opacity: 0;
+  animation: fadeInLinks 1s 2s forwards; /* Fade-in effect for links */
+}
+
+@keyframes fadeInLinks {
+  to {
+    opacity: 1;
+  }
 }
 
 .custom-additional-links a {
   display: inline-block;
   margin: 15px; /* Increased margin between links */
   font-size: 16px;
-  color: #5a67d8;
+  color: black; /* Black color for register text */
   text-decoration: none;
   cursor: pointer;
+  transition: color 0.3s ease; /* Smooth color change on hover */
 }
 
 .custom-additional-links a:hover {
   text-decoration: underline;
+  color: #63a69f; /* Soft teal color on hover */
 }

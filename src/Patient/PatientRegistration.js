@@ -67,7 +67,7 @@ const PatientRegistration = () => {
             setPreviewImage(null);
         } catch (err) {
             console.error(err);
-            setError('An error occurred during registration.');
+            setError('Email or Contact already exists.');
         }
     };
 

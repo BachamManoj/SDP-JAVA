@@ -74,7 +74,6 @@ const PayDoctorFee = () => {
                     };
     
                     try {
-                        // Fetch payment details from Razorpay
                         const paymentDetailsResponse = await fetch(`http://localhost:9999/payments/paymentDetails/${response.razorpay_payment_id}`, {
                             method: 'GET',
                             headers: { 'Authorization': `Bearer ${sessionStorage.getItem('auth_token')}` },
@@ -93,7 +92,6 @@ const PayDoctorFee = () => {
                             }
                         }
     
-                        // Update payment status in the backend
                         const confirmResponse = await fetch('http://localhost:9999/payments/payNow', {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },
@@ -111,19 +109,20 @@ const PayDoctorFee = () => {
                             ePrescriptionPayments.map((p) => (p.id === updatedPayment.id ? updatedPayment : p))
                         );
     
-                        // Confirm the order after successful payment
-                        const confirmOrderResponse = await fetch(`http://localhost:9999/confirmOrder/${selectedPayment.appointment.id}`, {
-                            method: 'POST',
-                            credentials: 'include',
-                        });
+                        if (ePrescriptionPayments.some((p) => p.id === selectedPayment.id)) {
+                            const confirmOrderResponse = await fetch(`http://localhost:9999/confirmOrder/${selectedPayment.appointment.id}`, {
+                                method: 'POST',
+                                credentials: 'include',
+                            });
     
-                        if (!confirmOrderResponse.ok) {
-                            throw new Error('Order confirmation failed');
+                            if (!confirmOrderResponse.ok) {
+                                throw new Error('Order confirmation failed');
+                            }
+    
+                            const confirmOrderMessage = await confirmOrderResponse.text();
+                            console.log(confirmOrderMessage); 
+                            alert('Order confirmed successfully!');
                         }
-    
-                        const confirmOrderMessage = await confirmOrderResponse.text();
-                        console.log(confirmOrderMessage); // Optionally display success message
-                        alert('Order confirmed successfully!');
                     } catch (error) {
                         setError(error.message);
                     } finally {
@@ -145,6 +144,7 @@ const PayDoctorFee = () => {
             setIsProcessing(false);
         }
     };
+    
     
 
     if (loading) {

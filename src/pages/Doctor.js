@@ -1,61 +1,78 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Modal, Button } from 'react-bootstrap';
+import { Modal, Button, Spinner } from 'react-bootstrap';
 import Navbar from './Navbar';
+import axios from 'axios';
 
-
-const doctors = [
-  // Cardiologists
-  { name: "Dr. Rajesh Kumar", specialty: "Cardiologist", experience: "15 years" },
-  { name: "Dr. Anjali Mehta", specialty: "Cardiologist", experience: "12 years" },
-  { name: "Dr. Vikram Singh", specialty: "Cardiologist", experience: "20 years" },
-  
-  // Pediatricians
-  { name: "Dr. Neha Sharma", specialty: "Pediatrician", experience: "10 years" },
-  { name: "Dr. Karan Verma", specialty: "Pediatrician", experience: "8 years" },
-  { name: "Dr. Priya Desai", specialty: "Pediatrician", experience: "14 years" },
-  
-  // Dermatologists
-  { name: "Dr. Sita Reddy", specialty: "Dermatologist", experience: "9 years" },
-  { name: "Dr. Amit Joshi", specialty: "Dermatologist", experience: "11 years" },
-  { name: "Dr. Riya Patel", specialty: "Dermatologist", experience: "7 years" },
-  
-  // Orthopedics
-  { name: "Dr. Sameer Gupta", specialty: "Orthopedic", experience: "13 years" },
-  { name: "Dr. Pooja Rao", specialty: "Orthopedic", experience: "16 years" },
-  { name: "Dr. Arjun Malhotra", specialty: "Orthopedic", experience: "10 years" },
-  
-  // Neurologists
-  { name: "Dr. Anil Kapoor", specialty: "Neurologist", experience: "18 years" },
-  { name: "Dr. Meena Iyer", specialty: "Neurologist", experience: "20 years" },
-  { name: "Dr. Ravi Nair", specialty: "Neurologist", experience: "5 years" },
-  
-  // General Practitioners
-  { name: "Dr. Suresh Rao", specialty: "General Practitioner", experience: "22 years" },
-  { name: "Dr. Kavita Sharma", specialty: "General Practitioner", experience: "19 years" },
-  { name: "Dr. Deepak Jain", specialty: "General Practitioner", experience: "14 years" },
-  
-  // Oncologists
-  { name: "Dr. Nisha Gupta", specialty: "Oncologist", experience: "17 years" },
-  { name: "Dr. Rohit Sen", specialty: "Oncologist", experience: "13 years" },
-  { name: "Dr. Maya Singh", specialty: "Oncologist", experience: "9 years" },
-  
-  // Psychiatrists
-  { name: "Dr. Rakesh Kumar", specialty: "Psychiatrist", experience: "10 years" },
-  { name: "Dr. Sneha Banerjee", specialty: "Psychiatrist", experience: "6 years" },
-  { name: "Dr. Ankit Mehra", specialty: "Psychiatrist", experience: "8 years" },
-];
-
-const DoctorsBySpecialty = () => {
-  const [selectedSpecialty, setSelectedSpecialty] = useState("Cardiologist");
+const Doctor = () => {
+  const [doctors, setDoctors] = useState([]); // All doctors
+  const [filteredDoctors, setFilteredDoctors] = useState([]); // Doctors to display based on specialty filter
+  const [selectedSpecialization, setSelectedSpecialization] = useState("All"); // Selected specialty
   const [showModal, setShowModal] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const filteredDoctors = doctors.filter(
-    doctor => doctor.specialty === selectedSpecialty
-  );
+  const specializations = [
+    { id: 1, name: "Cardiology" },
+    { id: 2, name: "Dermatology" },
+    { id: 3, name: "Neurology" },
+    { id: 4, name: "Pediatrics" },
+    { id: 5, name: "Orthopedics" },
+  ];
 
-  const specialties = [...new Set(doctors.map(doctor => doctor.specialty))].sort();
+  // Fetch all doctors when the component mounts
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        setLoading(true);
+        const res = await axios.get('http://localhost:9999/getAllDoctorsList', {}, { withCredentials: true });
+        setDoctors(res.data);
+        setFilteredDoctors(res.data); // Initially display all doctors
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching doctors:", err);
+        setError("Failed to fetch doctor data.");
+        setLoading(false);
+      }
+    };
+
+    fetchDoctors();
+  }, []);
+
+  // Filter doctors based on selected specialization
+  const fetchDoctorsBySpecialization = useCallback(async () => {
+    if (selectedSpecialization === "All") {
+      setFilteredDoctors(doctors); // Show all doctors if no specialty is selected
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const res = await axios.post(
+        'http://localhost:9999/getbyspecialty',
+        selectedSpecialization,
+        { headers: { 'Content-Type': 'text/plain' } },
+        { withCredentials: true }
+      );
+
+      if (res.data.length > 0) {
+        setFilteredDoctors(res.data);
+      } else {
+        setFilteredDoctors([]); // No doctors found for this specialization
+      }
+      setLoading(false);
+    } catch (err) {
+      console.error("Error fetching doctors by specialization:", err);
+      setError("Failed to fetch doctor data for this specialization.");
+      setLoading(false);
+    }
+  }, [selectedSpecialization, doctors]);
+
+  // Trigger doctor fetch when specialization changes
+  useEffect(() => {
+    fetchDoctorsBySpecialization();
+  }, [selectedSpecialization, fetchDoctorsBySpecialization]);
 
   const handleAppointment = (doctor) => {
     setSelectedDoctor(doctor);
@@ -68,57 +85,102 @@ const DoctorsBySpecialty = () => {
   };
 
   return (
-    <div className="container mt-5">
-      <Navbar/>
-      <h1 className="text-center mb-4">Select a Doctor by Specialty</h1>
-      
-      <div className="row justify-content-center mb-4">
-        <div className="col-md-6">
-          <select
-            className="form-select"
-            value={selectedSpecialty}
-            onChange={(e) => setSelectedSpecialty(e.target.value)}
-          >
-            {specialties.map((specialty, index) => (
-              <option key={index} value={specialty}>{specialty}</option>
-            ))}
-          </select>
+    <div className="container-fluid">
+      <Navbar />
+      <h1 className="text-center mb-4 text-primary">Select a Doctor by Specialization</h1>
+
+      {loading ? (
+        <div className="text-center">
+          <Spinner animation="border" variant="primary" />
+          <p>Loading doctors...</p>
         </div>
-      </div>
-
-      <div className="row">
-        {filteredDoctors.length > 0 ? (
-          filteredDoctors.map((doctor, index) => (
-            <div key={index} className="col-md-4">
-              <div className="card mb-4 shadow-sm h-100">
-                <div className="card-body d-flex flex-column">
-                  <h5 className="card-title">{doctor.name}</h5>
-                  <p className="card-text"><strong>Specialty:</strong> {doctor.specialty}</p>
-                  <p className="card-text"><strong>Experience:</strong> {doctor.experience}</p>
-                  <div className="mt-auto">
-                    <Button variant="primary" onClick={() => handleAppointment(doctor)}>
-                      Appointment
-                    </Button>
-                  </div>
-                </div>
-              </div>
+      ) : error ? (
+        <div className="alert alert-danger text-center">{error}</div>
+      ) : (
+        <>
+          {/* Specialty Filter Dropdown */}
+          <div className="row justify-content-center mb-4">
+            <div className="col-md-6 col-sm-8 col-12">
+              <select
+                className="form-select form-select-lg"
+                value={selectedSpecialization}
+                onChange={(e) => setSelectedSpecialization(e.target.value)}
+              >
+                <option value="All">All Specializations</option>
+                {specializations.map((specialization) => (
+                  <option key={specialization.id} value={specialization.name}>
+                    {specialization.name}
+                  </option>
+                ))}
+              </select>
             </div>
-          ))
-        ) : (
-          <p className="text-center">No doctors available for this specialty.</p>
-        )}
-      </div>
+          </div>
 
-      <Modal show={showModal} onHide={handleClose}>
-        <Modal.Header closeButton>
+          {/* Doctors Table */}
+          <div className="table-responsive">
+            <table className="table table-striped table-bordered table-hover">
+              <thead>
+                <tr className="table-dark">
+                  <th>Name</th>
+                  <th>Specialization</th>
+                  <th>Experience</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredDoctors.length > 0 ? (
+                  filteredDoctors.map((doctor, index) => (
+                    <tr key={index}>
+                      <td>{doctor.name}</td>
+                      <td>{doctor.specialization}</td>
+                      <td>{doctor.experience} years</td>
+                      <td>
+                        <Button
+                          variant="outline-primary"
+                          onClick={() => handleAppointment(doctor)}
+                          className="w-100"
+                        >
+                          Book Appointment
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="4" className="text-center">
+                      No doctors available for this specialization.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
+
+      {/* Appointment Modal */}
+      <Modal
+        show={showModal}
+        onHide={handleClose}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton className="bg-primary text-white">
           <Modal.Title>Book an Appointment</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {selectedDoctor ? (
             <>
-              <p><strong>Doctor:</strong> {selectedDoctor.name}</p>
-              <p><strong>Specialty:</strong> {selectedDoctor.specialty}</p>
-              <p><strong>Experience:</strong> {selectedDoctor.experience}</p>
+              <p>
+                <strong>Doctor:</strong> {selectedDoctor.name}
+              </p>
+              <p>
+                <strong>Specialization:</strong> {selectedDoctor.specialization}
+              </p>
+              <p>
+                <strong>Experience:</strong> {selectedDoctor.experience} years
+              </p>
               <p>Please contact the clinic to schedule your appointment.</p>
             </>
           ) : (
@@ -129,7 +191,10 @@ const DoctorsBySpecialty = () => {
           <Button variant="secondary" onClick={handleClose}>
             Close
           </Button>
-          <Button variant="primary" onClick={() => alert('Appointment booked!')}>
+          <Button
+            variant="primary"
+            onClick={() => alert("Appointment booked!")}
+          >
             Confirm Appointment
           </Button>
         </Modal.Footer>
@@ -138,4 +203,4 @@ const DoctorsBySpecialty = () => {
   );
 };
 
-export default DoctorsBySpecialty;
+export default Doctor;

@@ -1,0 +1,55 @@
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+  }
+  
+  .login-container {
+    display: flex;
+    justify-content: flex-end; /* Align items to the right */
+    align-items: center;
+    min-height: 120.5vh;
+    background: url('https://res.cloudinary.com/deleaagvo/image/upload/v1733204538/1_tvmzcc.jpg') no-repeat center center fixed;
+    background-size: cover;
+    padding: 1rem; /* Add padding to ensure content isn't too close to the edges */
+  }
+  
+  .login-box {
+    text-align: center;
+    padding: 2rem;
+    background-color: rgba(255, 255, 255, 0.8); /* light background with transparency */
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 600px; /* Reduced max-width for better scrolling view */
+    width: 100%;
+    max-height: 100vh; /* Limit the height to allow scrolling */
+    overflow-y: auto; /* Enable vertical scrolling */
+  }
+  
+  .login-header {
+    margin-bottom: 1.5rem;
+  }
+  
+  .login-scroll {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .login-column {
+    margin-bottom: 2.5rem; /* Increased margin-bottom size */
+  }
+  
+  .login-card {
+    padding: 1rem;
+    background-color: #17a2b8; /* info background */
+    color: black;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    height: 100%;
+  }
+  
+  .login-button {
+    width: 100%;
+    margin-top: 1rem;
+  }

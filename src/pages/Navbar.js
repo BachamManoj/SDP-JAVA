@@ -25,23 +25,11 @@ export default function Navbar() {
               </li>
               <li className="nav-item"><Link className="nav-link" to="/about">About</Link></li>
               <li className="nav-item"><Link className="nav-link" to="/service">Services</Link></li>
+             
               <li className="nav-item dropdown">
-                <a className="nav-link dropdown-toggle" href="department.html" id="dropdown02" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Department <i className="icofont-thin-down"></i></a>
-                <ul className="dropdown-menu" aria-labelledby="dropdown02">
-                  <li><a className="dropdown-item" href="department.html">Departments</a></li>
-                  <li><a className="dropdown-item" href="department-single.html">Department Single</a></li>
-                </ul>
-              </li>
-              <li className="nav-item dropdown">
-                <a className="nav-link dropdown-toggle" href="doctor.html" id="dropdown03" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Doctors <i className="icofont-thin-down"></i></a>
-                <ul className="dropdown-menu" aria-labelledby="dropdown03">
-                  <li><Link className="nav-link" to="/doctor">Doctor</Link></li>
-                  {/* <li><a className="dropdown-item" href="doctor-single.html">Doctor Single</a></li> */}
-                  <li><Link className="nav-link" to="/appointment">Appointment</Link></li>
-                </ul>
+                <li><Link className="nav-link" to="/doctor">Doctor</Link></li>
               </li>
               <li className="nav-item"><Link className="nav-link" to="/contact">Contact</Link></li>
-              <li className="nav-item"><Link className="nav-link" to="/chat">Chating</Link></li>
             </ul>
           </div>
           <button

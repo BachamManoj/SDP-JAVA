@@ -162,86 +162,92 @@ const Appointment = () => {
     };
 
     return (
-        <div className="appointment-container">
-            <div className="appointment-sidebar">
-                <PatientDashboard />
-            </div>
-            <div className="appointment-main-content">
-                <h2>Book an Appointment</h2>
-                <div className="row">
-                    <div className="col-md-6 mb-3">
-                        <label htmlFor="specialty" className="form-label">Select Specialty:</label>
-                        <select
-                            id="specialty"
-                            className="form-select"
-                            value={speciality}
-                            onChange={handleSpecialtyChange}
-                        >
-                            <option value="">Choose a specialty</option>
-                            {specialties.map((spec) => (
-                                <option key={spec.id} value={spec.name}>{spec.name}</option>
-                            ))}
-                        </select>
-                    </div>
+        <div className="dashboard-container d-flex">
+        <PatientDashboard />
+        <div className="container" style={{marginTop:'100px'}}>
+                <div className="col-lg-9">
+                    <div className="card shadow-sm">
+                        <div className="card-header bg-primary text-white">
+                            <h3 className="text-center">Book an Appointment</h3>
+                        </div>
+                        <div className="card-body">
+                            <div className="row">
+                                <div className="col-md-6 mb-4">
+                                    <label htmlFor="specialty" className="form-label fw-bold">Select Specialty</label>
+                                    <select
+                                        id="specialty"
+                                        className="form-select"
+                                        value={speciality}
+                                        onChange={handleSpecialtyChange}
+                                    >
+                                        <option value="">Choose a specialty</option>
+                                        {specialties.map((spec) => (
+                                            <option key={spec.id} value={spec.name}>{spec.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
 
-                    <div className="col-md-6 mb-3">
-                        <label htmlFor="doctor" className="form-label">Select a Doctor:</label>
-                        <select
-                            id="doctor"
-                            className="form-select"
-                            onChange={handleDoctorChange}
-                            disabled={doctors.length === 0}
-                        >
-                            <option value="">Choose a doctor</option>
-                            {doctors.map((doctor) => (
-                                <option key={doctor.id} value={doctor.id}>{doctor.name}</option>
-                            ))}
-                        </select>
+                                <div className="col-md-6 mb-4">
+                                    <label htmlFor="doctor" className="form-label fw-bold">Select Doctor</label>
+                                    <select
+                                        id="doctor"
+                                        className="form-select"
+                                        onChange={handleDoctorChange}
+                                        disabled={doctors.length === 0}
+                                    >
+                                        <option value="">Choose a doctor</option>
+                                        {doctors.map((doctor) => (
+                                            <option key={doctor.id} value={doctor.id}>{doctor.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="row">
+                                <div className="col-md-6 mb-4">
+                                    <label htmlFor="date" className="form-label fw-bold">Select Date</label>
+                                    <ReactDatePicker
+                                        id="date"
+                                        selected={selectedDate}
+                                        onChange={handleDateChange}
+                                        minDate={new Date()}
+                                        filterDate={(date) => !isDateDisabled(date)}
+                                        dateFormat="yyyy-MM-dd"
+                                        className="form-control"
+                                    />
+                                </div>
+
+                                <div className="col-md-6 mb-4">
+                                    <label htmlFor="timeSlot" className="form-label fw-bold">Select Time Slot</label>
+                                    <select
+                                        id="timeSlot"
+                                        className="form-select"
+                                        value={selectedTime}
+                                        onChange={(e) => setSelectedTime(e.target.value)}
+                                        disabled={!selectedDate || availableSlots.length === 0}
+                                    >
+                                        <option value="">Choose a time slot</option>
+                                        {availableSlots.map((slot, index) => (
+                                            <option key={index} value={slot}>
+                                                {slot}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="text-center mt-4">
+                                <button
+                                    onClick={handleAppointmentSubmit}
+                                    className="btn btn-success px-4 py-2"
+                                    disabled={!selectedDate || !selectedTime || !selectedDoctor}
+                                >
+                                    Book Appointment
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
-                <div className="row">
-                    <div className="col-md-6 mb-3">
-                        <label htmlFor="date" className="form-label">Select a Date:</label>
-                        <ReactDatePicker
-                            id="date"
-                            selected={selectedDate}
-                            onChange={handleDateChange}
-                            minDate={new Date()}
-                            filterDate={(date) => !isDateDisabled(date)}
-                            dateFormat="yyyy-MM-dd"
-                            className="form-control"
-                            wrapperClassName="w-100"
-                            popperClassName="custom-popper"
-                        />
-                    </div>
-
-                    <div className="col-md-6 mb-3">
-                        <label htmlFor="timeSlot" className="form-label">Select a Time Slot:</label>
-                        <select
-                            id="timeSlot"
-                            className="form-select"
-                            value={selectedTime}
-                            onChange={(e) => setSelectedTime(e.target.value)}
-                            disabled={!selectedDate || availableSlots.length === 0}
-                        >
-                            <option value="">Choose a time slot</option>
-                            {availableSlots.map((slot, index) => (
-                                <option key={index} value={slot}>
-                                    {slot}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-                </div>
-
-                <button
-                    onClick={handleAppointmentSubmit}
-                    className="btn btn-primary"
-                    disabled={!selectedDate || !selectedTime || !selectedDoctor}
-                >
-                    Book Appointment
-                </button>
             </div>
         </div>
     );

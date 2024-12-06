@@ -54,7 +54,7 @@ const TrackOrder = () => {
                 throw new Error('Failed to fetch orders.');
             }
             const data = await response.json();
-            setOrders(data);
+            setOrders(data.filter((order) => order.accept)); // Filter orders where accept is true
         } catch (error) {
             setError(error.message);
         } finally {
@@ -148,7 +148,7 @@ const TrackOrder = () => {
                         </div>
                     </div>
                 ) : (
-                    <p className="text-center">No orders available.</p>
+                    <p className="text-center">No accepted orders available.</p>
                 )}
             </div>
         </div>

@@ -1,128 +1,91 @@
-/* Overall Dashboard Container */
+/* Dashboard Container */
 .custom-dashboard-container {
-    margin-top: 10vh;
-    display: flex;
-    font-family: Arial, sans-serif;
-  }
-  
-  /* Navbar Styling */
-  .custom-navbar {
-    background-color: #7AB2D3;
-    padding: 10px 20px;
-    text-align: center;
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-    height: 70px; /* Fixed height to prevent navbar from shrinking */
-    display: flex;
-    align-items: center; /* Align content vertically in the center */
-    justify-content: center;
-  }
-  
-  .custom-navbar-container{
-    width: 100%; /* Full width */
-    background-color: #5a67d8; /* Attractive color */
-    position: fixed; /* Fix to the top */
-    top: 0; /* Align to the top */
-    left: 0; /* Align to the left */
-    z-index: 1000; /* Ensure it stays above other content */
-    height: 60px; 
-  }
-  
-  /* Title Styling */
-  .custom-navbar-title {
-    font-size: 24px;
-    font-weight: bold;
-    color: #333; /* Adjust text color if needed */
-    
-    /* 3D effect for navbar title */
-    position: relative;
-    display: inline-block;
-    text-transform: uppercase;
-    font-size: 36px;
-    color: #0a407d; /* Base color for the main title */
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2), 
-                 0 0 25px rgba(0, 0, 0, 0.1),
-                 0 0 5px rgba(0, 0, 0, 0.1);
-  }
-  
-  .custom-navbar-title::before {
-    content: attr(data-text);
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: -1;
-    color: rgba(0, 0, 0, 0.3);
-    transform: translate(3px, 3px);
-    font-weight: bold;
-    font-size: 38px;
-  }
-  
-  /* Hover effect for navbar title */
-  .custom-navbar-title:hover {
-    color: #043464; /* Change color when hovering */
-    transform: translateY(-2px);
-    transition: transform 0.3s ease-out;
-  }
-  
-  /* Sidebar Styling */
-  .custom-sidebar1 {
-    margin-top: 0;
-    background-color: #bef8fd !important;
-    color: white;
-    padding: 20px;
-  }
-  
-  
-  
-  .custom-hospital-logo {
-    width: 100px;
-  }
-  
-  .custom-profile-image-container {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
-  }
-  
-  .custom-profile-image {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-  }
-  
-  /* Navbar Links in Sidebar */
-  .custom-navbar-center {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .custom-navbar-item {
-    color: #ffffff;
-    text-decoration: none;
-    padding: 12px 20px; /* Increased padding for better button feel */
-    text-align: center;
-    margin-bottom: 25px; /* Space between buttons */
-    border-radius: 8px;
-    transition: transform 0.2s ease, box-shadow 0.3s ease;
-    background-color: #6439FF; /* Button background */
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2); /* Add shadow for 3D effect */
-  }
-  
-  /* 3D effect for sidebar buttons */
-  .custom-navbar-item:hover {
-    background-color: #7A53FF; /* Hover color */
-    box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.3); /* Deeper shadow on hover */
-    transform: translateY(-3px); /* Lift button effect */
-  }
-  
-  .custom-navbar-item:active {
-    background-color: #5330A2; /* Darker on active click */
-    box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.4); /* Smaller shadow on click */
-    transform: translateY(1px); /* Pressed effect */
-  }
-  
-  .custom-navbar-item:focus {
-    outline: none; /* Remove default focus outline */
-    box-shadow: 0 0 0 2px rgba(100, 57, 255, 0.6); /* Focus ring */
-  }
-  
-  
+  margin-top: 10vh;
+  display: flex;
+  font-family: Arial, sans-serif;
+}
+
+/* Sidebar */
+.custom-sidebar1 {
+  width: 250px;
+  transition: width 0.3s ease;
+  padding: 20px;
+  background-color: #bef8fd !important;
+  position: relative;
+}
+
+.custom-sidebar1.collapsed {
+  width: 70px; /* Minimized width */
+  padding: 10px;
+}
+
+.custom-profile-image-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.custom-profile-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+}
+
+.custom-navbar-center {
+  display: flex;
+  flex-direction: column;
+  transition: opacity 0.3s ease;
+}
+
+.custom-navbar-center.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Sidebar Toggle Button */
+.sidebar-toggle {
+  background-color: transparent;
+  border: none;
+  color: #333;
+  font-size: 24px;
+  cursor: pointer;
+  position: absolute;
+  top: 50%; /* Place in the middle vertically */
+  right: -20px; /* Adjust to position outside sidebar */
+  transform: translateY(-50%); /* Center vertically */
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.sidebar-toggle:hover {
+  transform: scale(1.1);
+  background-color: #d0f0ff;
+}
+
+.sidebar-toggle:focus {
+  outline: none;
+}
+
+/* Navbar Links */
+.custom-navbar-item {
+  color: #ffffff;
+  text-decoration: none;
+  padding: 12px 20px;
+  text-align: center;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  background-color: #6439FF;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.custom-navbar-item:hover {
+  background-color: #7A53FF;
+  box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.3);
+  transform: translateY(-3px);
+}
