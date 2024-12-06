@@ -41,7 +41,7 @@ const PharmacistDashboard = () => {
             <Link className="custom-navbar-item" to="/pharmacistMedicineList">Medicine List</Link>
             <Link className="custom-navbar-item" to="/viewPaymentsByEPharmacist">E-Prescription Payments</Link>
             <Link className="custom-navbar-item" to="/viewPaymentsByEPharmacist">Payments</Link>
-            <Link className="custom-navbar-item" to="/support">Support</Link>
+            <Link className="custom-navbar-item" to="/pharmacistHomePage">Support</Link>
             <button
               className="custom-navbar-item custom-logout-button"
               onClick={handleLogout}

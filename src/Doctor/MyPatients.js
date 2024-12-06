@@ -1,20 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import DoctorDashboard from './DoctorDashboard'; 
+import DoctorDashboard from './DoctorDashboard';
 import PrescriptionForm from './PrescriptionForm';
-import FetchEPrescriptions from './FetchEPrescriptions'; 
+import FetchEPrescriptions from './FetchEPrescriptions';
 import DoctorChat from './DoctorChat';
+import { useNavigate } from 'react-router-dom';
 
 const MyPatients = () => {
   const [patients, setPatients] = useState([]);
   const [doctor, setDoctor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedPatient, setSelectedPatient] = useState(null); 
+  const [selectedPatient, setSelectedPatient] = useState(null);
   const [showPrescriptionForm, setShowPrescriptionForm] = useState(false);
-  const [showEPrescription, setShowEPrescription] = useState(null); 
-  const [selectedPatientEmail, setSelectedPatientEmail] = useState(null); 
+  const [showEPrescription, setShowEPrescription] = useState(null);
+  const [selectedPatientEmail, setSelectedPatientEmail] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDoctorDetails = async () => {
@@ -47,7 +49,7 @@ const MyPatients = () => {
         appointmentId: patient.id,
         patientId: patient.patient.id,
         doctorId: doctor.id,
-        patientEmail: patient.patient.email, 
+        patientEmail: patient.patient.email,
       };
       setSelectedPatient(prescriptionDetails);
       setShowPrescriptionForm(true);
@@ -59,6 +61,10 @@ const MyPatients = () => {
 
   const handleChatClick = (email) => {
     setSelectedPatientEmail(email);
+  };
+
+  const handleVideoCallClick = (appointmentId) => {
+    navigate('/onlineVideoCall', { state: { appointmentID: appointmentId } });
   };
 
   return (
@@ -103,18 +109,14 @@ const MyPatients = () => {
                       <td>{patient.isCompleted ? 'Yes' : 'No'}</td>
                       <td>
                         {patient.isCompleted ? (
-                          <button
-                            className="btn btn-primary me-2"
-                            onClick={() => handlePrescriptionClick(patient)}
-                          >
-                            Provide Prescription
-                          </button>
-                        ) : (
-                          <span className="text-warning">
-                            This will enable after completion of virtual consultation.
-                          </span>
-                        )}
-                          {patient.isCompleted ?( <button
+                          <>
+                            <button
+                              className="btn btn-primary me-2"
+                              onClick={() => handlePrescriptionClick(patient)}
+                            >
+                              Provide Prescription
+                            </button>
+                            <button
                               className="btn btn-secondary"
                               onClick={() =>
                                 setShowEPrescription(
@@ -123,14 +125,27 @@ const MyPatients = () => {
                               }
                             >
                               {showEPrescription === patient.id ? 'Hide' : 'Show'}
-                            </button>):(<p></p>)
-                          }
-                        <button
-                          className="btn btn-link"
-                          onClick={() => handleChatClick(patient.patient.email)}
-                        >
-                          Chat
-                        </button>
+                            </button>
+                            <button
+                              className="btn btn-link"
+                              onClick={() => handleChatClick(patient.patient.email)}
+                            >
+                              Chat
+                            </button>
+                          </>
+                        ) : (
+                          <span className="text-warning">
+                            Complete the consultation to enable additional options.
+                          </span>
+                        )}
+                        {!patient.isCompleted && (
+                          <button
+                            className="btn btn-success ms-2"
+                            onClick={() => handleVideoCallClick(patient.id)}
+                          >
+                            Start Video Call
+                          </button>
+                        )}
                       </td>
                     </tr>
                     {showEPrescription === patient.id && (

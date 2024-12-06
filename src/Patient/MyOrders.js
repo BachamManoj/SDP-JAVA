@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import PatientDashboard from './PatientDashboard';
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTruck, faBoxOpen, faCheckCircle, faCircle } from '@fortawesome/free-solid-svg-icons';
+import { faTruck, faBoxOpen, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 
 const MyOrders = () => {
     const [orders, setOrders] = useState([]);
@@ -27,7 +27,7 @@ const MyOrders = () => {
         if (order.delivered) return 'Delivered';
         if (order.inTransit) return 'In Transit';
         if (order.dispatched) return 'Dispatched';
-        return 'Pending';
+        return 'Unknown';
     };
 
     const getStatusClass = (order) => {
@@ -42,7 +42,6 @@ const MyOrders = () => {
             { name: 'Dispatched', icon: faTruck, status: order.dispatched },
             { name: 'In Transit', icon: faBoxOpen, status: order.inTransit },
             { name: 'Delivered', icon: faCheckCircle, status: order.delivered },
-            { name: 'Pending', icon: faCircle, status: !order.delivered && !order.inTransit && !order.dispatched },
         ];
 
         return (
@@ -103,7 +102,7 @@ const MyOrders = () => {
                                         <td>{new Date(order.orderDate).toLocaleString()}</td>
                                         <td>{order.address}</td>
                                         <td>
-                                            <span className={`badge ${getStatusClass(order)}`}>
+                                            <span className={`badge bg-success ${getStatusClass(order)}`}>
                                                 {getStatusText(order)}
                                             </span>
                                         </td>
@@ -133,7 +132,7 @@ const MyOrders = () => {
                 {`
                     .stage {
                         display: inline-block;
-                        width: 20%;
+                        width: 30%;
                         text-align: center;
                     }
 

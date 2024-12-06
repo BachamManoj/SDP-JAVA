@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'react-datepicker/dist/react-datepicker.css';
-import ReactDatePicker from 'react-datepicker';
-import PatientDashboard from './PatientDashboard';
-import './Appointment.css';
+import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "react-datepicker/dist/react-datepicker.css";
+import ReactDatePicker from "react-datepicker";
+import PatientDashboard from "./PatientDashboard";
+import "./Appointment.css";
 
 const Appointment = () => {
     const navigate = useNavigate();
@@ -22,13 +22,17 @@ const Appointment = () => {
     useEffect(() => {
         const initializeData = async () => {
             try {
-                const patientResponse = await axios.get('http://localhost:9999/getPatientDetails', { withCredentials: true });
+                const patientResponse = await axios.get("http://localhost:9999/getPatientDetails", {
+                    withCredentials: true,
+                });
                 setPatient(patientResponse.data);
 
                 const bookedDatesResponse = await axios.get(
                     `http://localhost:9999/getAlreadybookedDates/${patientResponse.data.id}`
                 );
-                const formattedDates = bookedDatesResponse.data.map(date => new Date(date).toLocaleDateString('en-CA'));
+                const formattedDates = bookedDatesResponse.data.map((date) =>
+                    new Date(date).toLocaleDateString("en-CA")
+                );
                 setBookedDates(formattedDates);
 
                 generateTimeSlots();
@@ -43,7 +47,7 @@ const Appointment = () => {
 
     const displaySessionExpiredMessage = () => {
         alert("Your session has expired. Please log in again.");
-        navigate('/login');
+        navigate("/login");
     };
 
     const generateTimeSlots = () => {
@@ -55,7 +59,7 @@ const Appointment = () => {
 
         while (start < end) {
             slots.push(
-                new Date(start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
+                new Date(start).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false })
             );
             start.setMinutes(start.getMinutes() + 30);
         }
@@ -68,9 +72,9 @@ const Appointment = () => {
 
         try {
             const response = await axios.post(
-                'http://localhost:9999/getbyspecialty',
+                "http://localhost:9999/getbyspecialty",
                 speciality,
-                { headers: { 'Content-Type': 'text/plain' } }
+                { headers: { "Content-Type": "text/plain" } }
             );
             setDoctors(response.data);
             setSelectedDoctor(null);
@@ -88,10 +92,10 @@ const Appointment = () => {
         if (!selectedDoctor || !selectedDate) return;
 
         try {
-            const formattedDate = selectedDate.toLocaleDateString('en-CA');
+            const formattedDate = selectedDate.toLocaleDateString("en-CA");
             const response = await axios.get(
                 `http://localhost:9999/getDoctorFreeSlot/${selectedDoctor.id}/${formattedDate}`
-            );     
+            );
             filterAvailableSlots(response.data);
         } catch (error) {
             console.error("Error fetching booked slots:", error);
@@ -103,10 +107,10 @@ const Appointment = () => {
     }, [selectedDoctor, selectedDate, fetchBookedSlots]);
 
     const filterAvailableSlots = (booked) => {
-        const trimmedGeneratedSlots = generatedSlots.map(slot => slot.slice(0, 5));
-        const trimmedBookedSlots = booked.map(slot => slot.slice(0, 5));
-        const remainingSlots = trimmedGeneratedSlots.filter(slot => !trimmedBookedSlots.includes(slot));
-    
+        const trimmedGeneratedSlots = generatedSlots.map((slot) => slot.slice(0, 5));
+        const trimmedBookedSlots = booked.map((slot) => slot.slice(0, 5));
+        const remainingSlots = trimmedGeneratedSlots.filter((slot) => !trimmedBookedSlots.includes(slot));
+
         setAvailableSlots(remainingSlots);
     };
 
@@ -116,7 +120,7 @@ const Appointment = () => {
 
     const handleDoctorChange = (e) => {
         const doctorId = parseInt(e.target.value, 10);
-        const selected = doctors.find(doctor => doctor.id === doctorId);
+        const selected = doctors.find((doctor) => doctor.id === doctorId);
         setSelectedDoctor(selected);
     };
 
@@ -132,7 +136,7 @@ const Appointment = () => {
         }
 
         try {
-            const formattedDate = selectedDate.toLocaleDateString('en-CA');
+            const formattedDate = selectedDate.toLocaleDateString("en-CA");
             const appointmentData = {
                 patient: patient,
                 doctor: selectedDoctor,
@@ -140,7 +144,7 @@ const Appointment = () => {
                 timeSlot: selectedTime,
             };
 
-            const response = await axios.post('http://localhost:9999/makeAppointment', appointmentData);
+            const response = await axios.post("http://localhost:9999/makeAppointment", appointmentData);
             alert(response.data || "Appointment successfully created!");
         } catch (error) {
             console.error("Error creating appointment:", error);
@@ -157,55 +161,64 @@ const Appointment = () => {
     ];
 
     const isDateDisabled = (date) => {
-        const formattedDate = date.toLocaleDateString('en-CA');
+        const formattedDate = date.toLocaleDateString("en-CA");
         return bookedDates.includes(formattedDate);
     };
 
     return (
         <div className="dashboard-container d-flex">
-        <PatientDashboard />
-        <div className="container" style={{marginTop:'100px'}}>
-                <div className="col-lg-9">
-                    <div className="card shadow-sm">
-                        <div className="card-header bg-primary text-white">
-                            <h3 className="text-center">Book an Appointment</h3>
-                        </div>
-                        <div className="card-body">
-                            <div className="row">
-                                <div className="col-md-6 mb-4">
-                                    <label htmlFor="specialty" className="form-label fw-bold">Select Specialty</label>
+            <PatientDashboard />
+            <div className="container" style={{ marginTop: '150px' }}>
+                <div className="row justify-content-center">
+                    <div className="col-lg-8">
+                        <div className="card shadow-lg">
+                            <div className="card-header bg-primary text-white text-center py-3">
+                                <h2>Book an Appointment</h2>
+                            </div>
+                            <div className="card-body">
+                                <div className="mb-4">
+                                    <label htmlFor="specialty" className="form-label fw-bold">
+                                        Select Specialty
+                                    </label>
                                     <select
                                         id="specialty"
                                         className="form-select"
                                         value={speciality}
                                         onChange={handleSpecialtyChange}
+                                        style={{ borderRadius: '25px' }}
                                     >
                                         <option value="">Choose a specialty</option>
                                         {specialties.map((spec) => (
-                                            <option key={spec.id} value={spec.name}>{spec.name}</option>
+                                            <option key={spec.id} value={spec.name}>
+                                                {spec.name}
+                                            </option>
                                         ))}
                                     </select>
                                 </div>
 
-                                <div className="col-md-6 mb-4">
-                                    <label htmlFor="doctor" className="form-label fw-bold">Select Doctor</label>
+                                <div className="mb-4">
+                                    <label htmlFor="doctor" className="form-label fw-bold">
+                                        Select Doctor
+                                    </label>
                                     <select
                                         id="doctor"
                                         className="form-select"
                                         onChange={handleDoctorChange}
                                         disabled={doctors.length === 0}
+                                        style={{ borderRadius: '25px' }}
                                     >
                                         <option value="">Choose a doctor</option>
                                         {doctors.map((doctor) => (
-                                            <option key={doctor.id} value={doctor.id}>{doctor.name}</option>
+                                            <option key={doctor.id} value={doctor.id}>
+                                                {doctor.name}
+                                            </option>
                                         ))}
                                     </select>
                                 </div>
-                            </div>
 
-                            <div className="row">
+                                <div className="row">
                                 <div className="col-md-6 mb-4">
-                                    <label htmlFor="date" className="form-label fw-bold">Select Date</label>
+                                    <label htmlFor="date" className="form-label fw-bold">Select Date</label><br/>
                                     <ReactDatePicker
                                         id="date"
                                         selected={selectedDate}
@@ -213,7 +226,7 @@ const Appointment = () => {
                                         minDate={new Date()}
                                         filterDate={(date) => !isDateDisabled(date)}
                                         dateFormat="yyyy-MM-dd"
-                                        className="form-control"
+                                        className="form-control h-50"
                                     />
                                 </div>
 
@@ -225,6 +238,7 @@ const Appointment = () => {
                                         value={selectedTime}
                                         onChange={(e) => setSelectedTime(e.target.value)}
                                         disabled={!selectedDate || availableSlots.length === 0}
+                                        style={{ borderRadius: '25px' }}
                                     >
                                         <option value="">Choose a time slot</option>
                                         {availableSlots.map((slot, index) => (
@@ -236,14 +250,15 @@ const Appointment = () => {
                                 </div>
                             </div>
 
-                            <div className="text-center mt-4">
-                                <button
-                                    onClick={handleAppointmentSubmit}
-                                    className="btn btn-success px-4 py-2"
-                                    disabled={!selectedDate || !selectedTime || !selectedDoctor}
-                                >
-                                    Book Appointment
-                                </button>
+                                <div className="text-center">
+                                    <button
+                                        onClick={handleAppointmentSubmit}
+                                        className="btn btn-success px-4 py-2"
+                                        disabled={!selectedDate || !selectedTime || !selectedDoctor}
+                                    >
+                                        Book Appointment
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>

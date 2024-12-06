@@ -143,7 +143,7 @@ const MyAppointments = () => {
                   <th>Doctor Name</th>
                   <th>Date</th>
                   <th>Time Slot</th>
-                  <th>Virtual Appointment</th>
+                  
                   <th>Post Queries</th>
                   <th>Status</th>
                   <th>Actions</th>
@@ -158,13 +158,7 @@ const MyAppointments = () => {
                       {new Date(appointment.date).toLocaleDateString('en-GB')}
                     </td>
                     <td>{appointment.timeSlot}</td>
-                    <td>
-                      {appointment.isCompleted ? (
-                        <span className="badge bg-success">Yes</span>
-                      ) : (
-                        <span className="badge bg-danger">No</span>
-                      )}
-                    </td>
+                    
                     <td>
                       <button
                         className="btn btn-link ml-2"
@@ -175,7 +169,16 @@ const MyAppointments = () => {
                     </td>
                     <td>{appointment.status}</td>
                     <td>
-                      {appointment.isCompleted ? null : (
+                      {appointment.isCompleted ? (
+                        <a
+                          href={appointment.appointmentUrl}
+                          className="btn btn-success"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Join Virtual Appointment
+                        </a>
+                      ) : (
                         <button
                           className="btn btn-danger"
                           onClick={() => handleCancelAppointment(appointment.id)}

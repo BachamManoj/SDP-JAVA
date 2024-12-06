@@ -1,5 +1,6 @@
 import React from 'react';
-import './Navbar.css'; 
+import './Navbar.css';
+import { Link,useNavigate } from 'react-router-dom'; 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -31,18 +32,14 @@ export default function Home() {
                 <h1 className="mb-3 mt-3">Your Most Trusted Health Partner</h1>
 
                 <p className="mb-4 pr-5">
-                  A repudiandae ipsam labore ipsa voluptatum quidem quae
-                  laudantium quisquam aperiam maiores sunt fugit, deserunt rem
-                  suscipit placeat.
+                Rejecting what doesn't matter and focusing on what's truly important, appreciating the good things, avoiding harm, and working towards what we value.
                 </p>
                 <div className="btn-container">
                   <a
-                    href="appoinment.html"
-                    target="_blank"
                     className="btn btn-main-2 btn-icon btn-round-full"
                     rel="noreferrer"
                   >
-                    Make Appointment <i className="icofont-simple-right ml-2"></i>
+                   <Link className="nav-link" to="/patientlogin"> Make Appointment</Link>
                   </a>
                 </div>
               </div>
@@ -68,12 +65,7 @@ export default function Home() {
                     Get all-time support for emergencies. We have introduced the
                     principle of family medicine.
                   </p>
-                  <a
-                    href="appoinment.html"
-                    className="btn btn-main btn-round-full"
-                  >
-                    Make an appointment
-                  </a>
+                  <Link className="btn btn-main btn-round-full" to="/patientlogin"> Make Appointment</Link>
                 </div>
 
                 <div className="feature-item mb-5 mb-lg-0">
@@ -135,9 +127,9 @@ export default function Home() {
                 <p className="mt-4 mb-5">
                 We provide the best leading medical service, with unparalleled care and expertise. Our services are backed by a commitment to excellence and a dedication to patient satisfaction.
                 </p>
-                <a href="service.html" className="btn btn-main-2 btn-round-full btn-icon">
-                  Services<i className="icofont-simple-right ml-3"></i>
-                </a>
+                
+                <Link className="btn btn-main-2 btn-round-full btn-icon" to="/service">Services</Link>
+
               </div>
             </div>
           </div>

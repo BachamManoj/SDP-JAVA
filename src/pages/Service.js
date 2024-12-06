@@ -7,6 +7,7 @@ import service3 from '../images/service-3.jpg'
 import service4 from '../images/service-4.jpg'
 import service6 from '../images/service-6.jpg'
 import service8 from '../images/service-8.jpg'
+import { Link,useNavigate } from 'react-router-dom';
 import './Navbar.css';
 import Navbar from './Navbar';
 
@@ -103,9 +104,10 @@ export default function Service() {
                 <h2 className="mb-5 text-lg">
                   We are pleased to offer you the <span className="title-color">chance to have the healthy</span>
                 </h2>
-                <a href="appointment.html" className="btn btn-main-2 btn-round-full">
+				<Link className="btn btn-main-2 btn-round-full" to="/patientlogin">               
                   Get appointment <FontAwesomeIcon icon={faArrowRight} className="ml-2" />
-                </a>
+				</Link>
+                
               </div>
             </div>
           </div>

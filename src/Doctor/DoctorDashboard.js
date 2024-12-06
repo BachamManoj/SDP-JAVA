@@ -65,7 +65,6 @@ const DoctorDashboard = () => {
                         <Link className="custom-navbar-item" to="/patientRecordsbyDocter">Patient Records</Link>
                         <Link className="custom-navbar-item" to="/postReportsData">Medical Records</Link>
                         <Link className="custom-navbar-item" to="/feedback">My feedback</Link>
-                        <Link className="custom-navbar-item" to="/support">Support</Link>
                         <Link className="custom-navbar-item" to="/updateDoctorProfile">My Profile</Link>
                         <a className="custom-navbar-item" href="#" onClick={handleLogout}>Logout</a> 
                     </div>

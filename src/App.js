@@ -42,7 +42,7 @@ import ViewOrders from './Pharmacist/ViewOrders';
 import TrackOrder from './Pharmacist/TrackOrder';
 import PharmacistHomePage from './Pharmacist/PharmacistHomePage';
 import MyOrders from './Patient/MyOrders';
-
+import VideoCall from './Doctor/VideoCall';
 
 function App() {
   return (
@@ -88,6 +88,7 @@ function App() {
           <Route exact path='/trackOrder' element={<TrackOrder/>} />
           <Route exact path='/pharmacistHomePage' element={<PharmacistHomePage/>} />
           <Route exact path='/myOrdersByPatient' element={<MyOrders/>} />
+          <Route exact path='/onlineVideoCall' element={<VideoCall/>} />
           
         </Routes>
       </Router>

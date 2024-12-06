@@ -1,0 +1,17 @@
+/* Make the modal backdrop transparent */
+.modal-backdrop {
+    background-color: transparent !important;
+  }
+  
+  /* Optional: Customize modal content if needed */
+  .modal-content {
+    background: #43d6f0; /* Slightly transparent white */
+    border-radius: 10px; /* Optional: rounded corners */
+    color: #000; /* Ensure text color is visible */
+  }
+  
+  /* Optional: Remove box shadow */
+  .modal-content {
+    box-shadow: none;
+  }
+  
