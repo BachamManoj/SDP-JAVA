@@ -22,7 +22,7 @@ function LoginPage() {
     const patientLoginData = { email, password };
 
     try {
-      const response = await fetch('http://localhost:9999/patientLogin', {
+      const response = await fetch('https://sdp-2200030709-production.up.railway.app/patientLogin', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
