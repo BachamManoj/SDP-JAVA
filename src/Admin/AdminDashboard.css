@@ -1,0 +1,26 @@
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 200vh; /* Full viewport height */
+    width: 200px; /* Fixed width for the sidebar */
+    overflow-y: auto; /* Add scroll if content exceeds height */
+    z-index: 1000; /* Ensures it stays on top */
+  }
+  
+  .main-content {
+    transition: margin-left 0.3s ease; /* Smooth transition */
+    padding: 20px;
+  }
+  
+  .ml-250 {
+    margin-left: 250px; /* Offset main content by sidebar width when open */
+  }
+  
+  .toggle-sidebar-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1050;
+  }
+  

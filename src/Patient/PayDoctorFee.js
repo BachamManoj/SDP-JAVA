@@ -159,50 +159,9 @@ const PayDoctorFee = () => {
         <div className="dashboard-container d-flex">
             <PatientDashboard />
             <div className="container" style={{ marginTop: 75 }}>
-                <h2 className="text-center mb-4">Doctor Fees</h2>
-                {payments.length > 0 ? (
-                    <table className="table table-striped table-bordered">
-                        <thead className="thead-dark">
-                            <tr>
-                                <th>Appointment ID</th>
-                                <th>Amount</th>
-                                <th>Payment Date</th>
-                                <th>Payment Method</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {payments.map((payment) => (
-                                <tr key={payment.id}>
-                                    <td>{payment.appointment.id}</td>
-                                    <td>Rs {payment.amount.toFixed(2)}</td>
-                                    <td>{payment.paymentDate}</td>
-                                    <td>{payment.paymentMethod}</td>
-                                    <td>
-                                        <span className={`badge ${payment.isPaid ? 'bg-success' : 'bg-warning'}`}>
-                                            {payment.isPaid ? 'Paid' : 'Unpaid'}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        {!payment.isPaid && (
-                                            <button
-                                                className="btn btn-primary"
-                                                onClick={() => setSelectedPayment(payment)}
-                                            >
-                                                Pay Now
-                                            </button>
-                                        )}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                ) : (
-                    <p className="text-center">No outstanding doctor fees.</p>
-                )}
+                
 
-                <h2 className="text-center mt-5 mb-4">ePrescription Fees</h2>
+                <h2 className="text-center mt-5 mb-4">DuePayment Fees</h2>
                 {ePrescriptionPayments.length > 0 ? (
                     <table className="table table-striped table-bordered">
                         <thead className="thead-dark">

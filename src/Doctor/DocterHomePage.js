@@ -88,7 +88,7 @@ const DoctorHomePage = () => {
                                     <div className="card-body">
                                         <h5 className="card-title">Virtual Consultation</h5>
                                         <p className="card-text">Host or join virtual consultations.</p>
-                                        <Link to="/virtualConsultation" className="btn btn-warning">
+                                        <Link to="/mySchedule" className="btn btn-warning">
                                             Start Consultation
                                         </Link>
                                     </div>

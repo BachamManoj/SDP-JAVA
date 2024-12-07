@@ -43,6 +43,12 @@ import TrackOrder from './Pharmacist/TrackOrder';
 import PharmacistHomePage from './Pharmacist/PharmacistHomePage';
 import MyOrders from './Patient/MyOrders';
 import VideoCall from './Doctor/VideoCall';
+import AdminLogin from './Admin/AdminLogin';
+import AdminDashboard from './Admin/AdminDashboard';
+import AdminMain from './Admin/AdminMain'
+import ManagePatient from './Admin/ManagePatient';
+import ManageDoctor from './Admin/ManageDoctor';
+import ManagePharmacist from './Admin/ManagePharmacist';
 
 function App() {
   return (
@@ -89,6 +95,12 @@ function App() {
           <Route exact path='/pharmacistHomePage' element={<PharmacistHomePage/>} />
           <Route exact path='/myOrdersByPatient' element={<MyOrders/>} />
           <Route exact path='/onlineVideoCall' element={<VideoCall/>} />
+          <Route exact path='/adminlogin' element={<AdminLogin/>} />
+          <Route exact path='/adminHomepage' element={<AdminDashboard/>} />
+          <Route exact path='/adminpage' element={<AdminMain/>} />
+          <Route exact path='/managePatients' element={<ManagePatient/>} />
+          <Route exact path='/manageDoctor' element={<ManageDoctor/>} />
+          <Route exact path='/managePharmacist' element={<ManagePharmacist/>} />
           
         </Routes>
       </Router>
