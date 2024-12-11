@@ -13,8 +13,8 @@ const PayDoctorFee = () => {
     useEffect(() => {
         const fetchPayments = async () => {
             try {
-                const response = await fetch('http://localhost:9999/getPatientBillings', { credentials: 'include' });
-                const ePresResponse = await fetch('http://localhost:9999/getPatientBillingsEprescription', { credentials: 'include' });
+                const response = await fetch('https://sdp-2200030709-production.up.railway.app/getPatientBillings', { credentials: 'include' });
+                const ePresResponse = await fetch('https://sdp-2200030709-production.up.railway.app/getPatientBillingsEprescription', { credentials: 'include' });
 
                 if (!response.ok || !ePresResponse.ok) {
                     throw new Error('Error fetching payments.');
@@ -43,7 +43,7 @@ const PayDoctorFee = () => {
     
         setIsProcessing(true);
         try {
-            const orderResponse = await fetch('http://localhost:9999/payments/createOrder', {
+            const orderResponse = await fetch('https://sdp-2200030709-production.up.railway.app/payments/createOrder', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
                 body: JSON.stringify(selectedPayment),
@@ -74,7 +74,7 @@ const PayDoctorFee = () => {
                     };
     
                     try {
-                        const paymentDetailsResponse = await fetch(`http://localhost:9999/payments/paymentDetails/${response.razorpay_payment_id}`, {
+                        const paymentDetailsResponse = await fetch(`https://sdp-2200030709-production.up.railway.app/payments/paymentDetails/${response.razorpay_payment_id}`, {
                             method: 'GET',
                             headers: { 'Authorization': `Bearer ${sessionStorage.getItem('auth_token')}` },
                         });
@@ -92,7 +92,7 @@ const PayDoctorFee = () => {
                             }
                         }
     
-                        const confirmResponse = await fetch('http://localhost:9999/payments/payNow', {
+                        const confirmResponse = await fetch('https://sdp-2200030709-production.up.railway.app/payments/payNow', {
                             method: 'PUT',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify(paymentData),
@@ -110,7 +110,7 @@ const PayDoctorFee = () => {
                         );
     
                         if (ePrescriptionPayments.some((p) => p.id === selectedPayment.id)) {
-                            const confirmOrderResponse = await fetch(`http://localhost:9999/confirmOrder/${selectedPayment.appointment.id}`, {
+                            const confirmOrderResponse = await fetch(`https://sdp-2200030709-production.up.railway.app/confirmOrder/${selectedPayment.appointment.id}`, {
                                 method: 'POST',
                                 credentials: 'include',
                             });

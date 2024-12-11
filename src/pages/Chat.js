@@ -14,7 +14,7 @@ const Chat = () => {
         // Fetch patient details first
         const fetchPatientData = async () => {
             try {
-                const res = await axios.get('http://localhost:9999/getPatientDetails', { withCredentials: true });
+                const res = await axios.get('https://sdp-2200030709-production.up.railway.app/getPatientDetails', { withCredentials: true });
                 setPatientData(res.data);
                 
                 fetch(`/chat/history?sender=${res.data.email}&receiver=User2`)
@@ -22,7 +22,7 @@ const Chat = () => {
                     .then(data => setMessages(data));
 
                 
-                const socket = new SockJS('http://localhost:9999/ws');
+                const socket = new SockJS('https://sdp-2200030709-production.up.railway.app/ws');
                 const client = Stomp.over(socket);
                 
                 client.connect({}, () => {

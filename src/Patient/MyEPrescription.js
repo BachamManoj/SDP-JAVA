@@ -17,7 +17,7 @@ const MyEPrescription = () => {
     const fetchPatientDetails = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:9999/getPatientDetails",
+          "https://sdp-2200030709-production.up.railway.app/getPatientDetails",
           { withCredentials: true }
         );
         if (response.data && response.data.id) {

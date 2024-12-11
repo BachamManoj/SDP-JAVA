@@ -11,12 +11,12 @@ const DoctorDashboard = () => {
     useEffect(() => {
         const fetchDoctorDetails = async () => {
             try {
-                const res = await axios.get('http://localhost:9999/getDoctorDetails', {
+                const res = await axios.get('https://sdp-2200030709-production.up.railway.app/getDoctorDetails', {
                     withCredentials: true,
                 });
                 setDoctor(res.data);
 
-                const imageRes = await axios.get(`http://localhost:9999/Doctorprofile/${res.data.id}/image`, {
+                const imageRes = await axios.get(`https://sdp-2200030709-production.up.railway.app/Doctorprofile/${res.data.id}/image`, {
                     responseType: 'blob',
                     withCredentials: true,
                 });
@@ -31,7 +31,7 @@ const DoctorDashboard = () => {
 
     const handleLogout = async () => {
         try {
-            await axios.post('http://localhost:9999/doctorlogout', {}, { withCredentials: true });
+            await axios.post('https://sdp-2200030709-production.up.railway.app/doctorlogout', {}, { withCredentials: true });
             setDoctor(null);
             setProfileImage(null);
             alert("Logged out successfully.");

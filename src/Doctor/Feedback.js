@@ -11,7 +11,7 @@ const Feedback = () => {
     useEffect(() => {
         const fetchFeedback = async () => {
             try {
-                const res = await axios.get('http://localhost:9999/viewMyFeedback', {
+                const res = await axios.get('https://sdp-2200030709-production.up.railway.app/viewMyFeedback', {
                     withCredentials: true,
                 });
                 setAppointments(res.data);

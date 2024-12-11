@@ -13,7 +13,7 @@ const ViewOrders = () => {
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const response = await fetch('http://localhost:9999/getAllOrders', { credentials: 'include' });
+                const response = await fetch('https://sdp-2200030709-production.up.railway.app/getAllOrders', { credentials: 'include' });
                 if (!response.ok) {
                     if (response.status === 401) throw new Error('Unauthorized access. Please log in as a pharmacist.');
                     throw new Error('Failed to fetch orders.');
@@ -26,7 +26,7 @@ const ViewOrders = () => {
                 await Promise.all(
                     filteredOrders.map(async (order) => {
                         const priceResponse = await fetch(
-                            `http://localhost:9999/getPriceOfOrder/${order.appointment.id}`,
+                            `https://sdp-2200030709-production.up.railway.app/getPriceOfOrder/${order.appointment.id}`,
                             { credentials: 'include' }
                         );
                         prices[order.id] = priceResponse.ok ? await priceResponse.json() : 'Error';
@@ -44,7 +44,7 @@ const ViewOrders = () => {
 
     const fetchEPrescriptions = async (appointmentId) => {
         try {
-            const response = await fetch(`http://localhost:9999/checkMedicinesAcceptOrder/${appointmentId}`, {
+            const response = await fetch(`https://sdp-2200030709-production.up.railway.app/checkMedicinesAcceptOrder/${appointmentId}`, {
                 credentials: 'include',
             });
             if (!response.ok) throw new Error('Failed to fetch ePrescriptions.');
@@ -58,7 +58,7 @@ const ViewOrders = () => {
 
     const confirmAcceptOrder = async (appointmentId) => {
         try {
-            const response = await fetch(`http://localhost:9999/acceptOrder/${appointmentId}`, {
+            const response = await fetch(`https://sdp-2200030709-production.up.railway.app/acceptOrder/${appointmentId}`, {
                 method: 'POST',
                 credentials: 'include',
             });

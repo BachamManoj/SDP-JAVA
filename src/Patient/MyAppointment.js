@@ -17,7 +17,7 @@ const MyAppointments = () => {
   useEffect(() => {
     const fetchPatientDetails = async () => {
       try {
-        const res = await axios.get('http://localhost:9999/getPatientDetails', {
+        const res = await axios.get('https://sdp-2200030709-production.up.railway.app/getPatientDetails', {
           withCredentials: true,
         });
         setPatientId(res.data.id);

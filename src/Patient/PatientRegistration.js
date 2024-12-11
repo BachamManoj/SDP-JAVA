@@ -47,7 +47,7 @@ const PatientRegistration = () => {
             Object.keys(formData).forEach((key) => data.append(key, formData[key]));
             if (image) data.append("profileImage", image);
 
-            const res = await axios.post('http://localhost:9999/patientRegistration', data, {
+            const res = await axios.post('https://sdp-2200030709-production.up.railway.app/patientRegistration', data, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }

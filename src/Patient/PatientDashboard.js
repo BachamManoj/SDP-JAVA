@@ -13,12 +13,12 @@ const PatientDashboard = () => {
     useEffect(() => {
         const fetchPatientDetails = async () => {
             try {
-                const res = await axios.get('http://localhost:9999/getPatientDetails', {
+                const res = await axios.get('https://sdp-2200030709-production.up.railway.app/getPatientDetails', {
                     withCredentials: true,
                 });
                 setPatient(res.data);
 
-                const imageRes = await axios.get(`http://localhost:9999/profile/${res.data.id}/image`, {
+                const imageRes = await axios.get(`https://sdp-2200030709-production.up.railway.app/profile/${res.data.id}/image`, {
                     responseType: 'blob',
                     withCredentials: true,
                 });
@@ -33,7 +33,7 @@ const PatientDashboard = () => {
 
     const handleLogout = async () => {
         try {
-            await axios.post('http://localhost:9999/logout', {}, { withCredentials: true });
+            await axios.post('https://sdp-2200030709-production.up.railway.app/logout', {}, { withCredentials: true });
             setPatient(null);
             setProfileImage(null);
             alert("Logged out successfully.");

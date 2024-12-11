@@ -12,7 +12,7 @@ const MyOrders = () => {
 
     useEffect(() => {
         axios
-            .get('http://localhost:9999/getOrdersbyPatient', { withCredentials: true })
+            .get('https://sdp-2200030709-production.up.railway.app/getOrdersbyPatient', { withCredentials: true })
             .then((response) => {
                 setOrders(response.data);
                 setLoading(false);

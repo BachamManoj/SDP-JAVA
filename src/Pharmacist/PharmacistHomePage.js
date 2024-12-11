@@ -11,7 +11,7 @@ const PharmacistHomePage = () => {
     });
 
     useEffect(() => {
-        fetch('http://localhost:9999/getAllOrders', {
+        fetch('https://sdp-2200030709-production.up.railway.app/getAllOrders', {
             method: 'GET',
             credentials: 'include',
         })

@@ -10,7 +10,7 @@ const ViewPayments = () => {
   useEffect(() => {
     // Fetch payments data from the backend
     axios
-      .get("http://localhost:9999/viewAcceptedEPrescription")
+      .get("https://sdp-2200030709-production.up.railway.app/viewAcceptedEPrescription")
       .then((response) => {
         setPayments(response.data);
         setLoading(false);

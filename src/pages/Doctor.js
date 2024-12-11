@@ -28,7 +28,7 @@ const Doctor = () => {
     const fetchDoctors = async () => {
       try {
         setLoading(true);
-        const res = await axios.get('http://localhost:9999/getAllDoctorsList', {}, { withCredentials: true });
+        const res = await axios.get('https://sdp-2200030709-production.up.railway.app/getAllDoctorsList', {}, { withCredentials: true });
         setDoctors(res.data);
         setFilteredDoctors(res.data); // Initially display all doctors
         setLoading(false);
@@ -52,7 +52,7 @@ const Doctor = () => {
     try {
       setLoading(true);
       const res = await axios.post(
-        'http://localhost:9999/getbyspecialty',
+        'https://sdp-2200030709-production.up.railway.app/getbyspecialty',
         selectedSpecialization,
         { headers: { 'Content-Type': 'text/plain' } },
         { withCredentials: true }
@@ -80,7 +80,7 @@ const Doctor = () => {
     try {
       setSelectedDoctor(doctor);
       const imageRes = await axios.get(
-        `http://localhost:9999/Doctorprofile/${doctor.id}/image`,
+        `https://sdp-2200030709-production.up.railway.app/Doctorprofile/${doctor.id}/image`,
         {
           responseType: 'blob', 
           withCredentials: true, 

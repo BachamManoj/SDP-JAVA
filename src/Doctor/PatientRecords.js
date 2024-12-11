@@ -15,12 +15,12 @@ const PatientRecords = () => {
             setError(null);
 
             try {
-                const doctorResponse = await axios.get('http://localhost:9999/getDoctorDetails', { withCredentials: true });
+                const doctorResponse = await axios.get('https://sdp-2200030709-production.up.railway.app/getDoctorDetails', { withCredentials: true });
                 if (doctorResponse.data) {
                     setDoctor(doctorResponse.data);
 
                     const appointmentsResponse = await axios.get(
-                        `http://localhost:9999/getPatientAppointments/${doctorResponse.data.id}`,
+                        `https://sdp-2200030709-production.up.railway.app/getPatientAppointments/${doctorResponse.data.id}`,
                         { withCredentials: true }
                     );
 
@@ -52,7 +52,7 @@ const PatientRecords = () => {
             setError(null);
 
             const response = await axios.get(
-                `http://localhost:9999/viewPatientMedicalReport/${patientId}/${appointmentId}`,
+                `https://sdp-2200030709-production.up.railway.app/viewPatientMedicalReport/${patientId}/${appointmentId}`,
                 {
                     responseType: 'arraybuffer',
                     withCredentials: true,

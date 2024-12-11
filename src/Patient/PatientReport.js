@@ -10,7 +10,7 @@ const PatientReport = () => {
   useEffect(() => {
     const fetchPatientDetails = async () => {
       try {
-        const res = await axios.get('http://localhost:9999/getPatientDetails', { withCredentials: true });
+        const res = await axios.get('https://sdp-2200030709-production.up.railway.app/getPatientDetails', { withCredentials: true });
         setPatient(res.data);
       } catch (error) {
         console.error("Error fetching patient details", error);
@@ -25,7 +25,7 @@ const PatientReport = () => {
       const fetchAppointments = async () => {
         setLoading(true);
         try {
-          const response = await axios.get(`http://localhost:9999/getappointments/${patient.id}`);
+          const response = await axios.get(`https://sdp-2200030709-production.up.railway.app/getappointments/${patient.id}`);
           const completedAppointments = response.data.filter(appointment => appointment.reportCompleted);
           setAppointments(completedAppointments);
         } catch (error) {
@@ -41,7 +41,7 @@ const PatientReport = () => {
 
   const fetchReport = async (appointmentId, doctorId) => {
     try {
-      const response = await axios.get(`http://localhost:9999/viewPatientMedicalReportbyPatient/${appointmentId}/${doctorId}`, {
+      const response = await axios.get(`https://sdp-2200030709-production.up.railway.app/viewPatientMedicalReportbyPatient/${appointmentId}/${doctorId}`, {
         responseType: 'arraybuffer', 
         withCredentials: true
       });

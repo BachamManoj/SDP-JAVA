@@ -42,7 +42,7 @@ export default function VideoCall() {
 
       // Send the generated video call URL to the backend (only if appointmentID exists)
       if (appointmentID) {
-        axios.put('http://localhost:9999/OnlineConferance', null, {
+        axios.put('https://sdp-2200030709-production.up.railway.app/OnlineConferance', null, {
           params: { url: videoCallUrl, appointmentid: appointmentID },
         })
         .then(() => console.log('Video call URL updated successfully'))

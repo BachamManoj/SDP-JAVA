@@ -17,7 +17,7 @@ const ManagePharmacist = () => {
   // Fetch all pharmacists from the backend
   const fetchPharmacists = async () => {
     try {
-      const response = await axios.get('http://localhost:9999/managePharmacist');
+      const response = await axios.get('https://sdp-2200030709-production.up.railway.app/managePharmacist');
       setPharmacists(response.data);
     } catch (error) {
       console.error('Error fetching pharmacists:', error);
@@ -42,7 +42,7 @@ const ManagePharmacist = () => {
   const handleAddPharmacist = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:9999/addPharmacist', newPharmacist);
+      await axios.post('https://sdp-2200030709-production.up.railway.app/addPharmacist', newPharmacist);
       setMessage('Pharmacist added successfully');
       setNewPharmacist({ name: '', email: '', password: '' });
       fetchPharmacists(); // Refresh the pharmacist list
@@ -57,7 +57,7 @@ const ManagePharmacist = () => {
     const confirmDelete = window.confirm('Are you sure you want to delete this pharmacist?');
     if (confirmDelete) {
       try {
-        await axios.delete(`http://localhost:9999/managePharmacist/${id}`);
+        await axios.delete(`https://sdp-2200030709-production.up.railway.app/managePharmacist/${id}`);
         setMessage('Pharmacist deleted successfully');
         fetchPharmacists(); // Refresh the pharmacist list
       } catch (error) {

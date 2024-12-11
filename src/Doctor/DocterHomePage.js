@@ -13,14 +13,14 @@ const DoctorHomePage = () => {
         const fetchDoctorDetailsAndAppointments = async () => {
             try {
                 // Fetch doctor details
-                const doctorResponse = await axios.get('http://localhost:9999/getDoctorDetails', {
+                const doctorResponse = await axios.get('https://sdp-2200030709-production.up.railway.app/getDoctorDetails', {
                     withCredentials: true,
                 });
                 setDoctor(doctorResponse.data);
 
                 // Fetch and filter upcoming appointments
                 const appointmentsResponse = await axios.get(
-                    `http://localhost:9999/getPatientAppointments/${doctorResponse.data.id}`,
+                    `https://sdp-2200030709-production.up.railway.app/getPatientAppointments/${doctorResponse.data.id}`,
                     {
                         withCredentials: true,
                     }

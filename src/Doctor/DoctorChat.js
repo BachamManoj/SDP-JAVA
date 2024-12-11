@@ -14,10 +14,10 @@ const DoctorChat = ({ receiver }) => {
    
     const fetchDoctorData = async () => {
         try {
-            const res = await axios.get('http://localhost:9999/getDoctorDetails', { withCredentials: true });
+            const res = await axios.get('https://sdp-2200030709-production.up.railway.app/getDoctorDetails', { withCredentials: true });
             setDoctorData(res.data);
 
-            const response = await axios.get('http://localhost:9999/api/chat/history', {
+            const response = await axios.get('https://sdp-2200030709-production.up.railway.app/api/chat/history', {
                 params: { sender: res.data.email, receiver },
                 withCredentials: true,
             });
@@ -35,7 +35,7 @@ const DoctorChat = ({ receiver }) => {
     }, [receiver]);
 
     useEffect(() => {
-        const socket = new SockJS('http://localhost:9999/ws');
+        const socket = new SockJS('https://sdp-2200030709-production.up.railway.app/ws');
         const client = Stomp.over(socket);
     
         client.connect({}, () => {

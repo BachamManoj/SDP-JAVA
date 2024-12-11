@@ -13,10 +13,10 @@ const Chat = ({ user2 }) => {
 
     const fetchPatientData = async () => {
         try {
-            const res = await axios.get('http://localhost:9999/getPatientDetails', { withCredentials: true });
+            const res = await axios.get('https://sdp-2200030709-production.up.railway.app/getPatientDetails', { withCredentials: true });
             setPatientData(res.data);
 
-            const response = await axios.get('http://localhost:9999/api/chat/history', {
+            const response = await axios.get('https://sdp-2200030709-production.up.railway.app/api/chat/history', {
                 params: { sender: res.data.email, receiver: user2 },
                 withCredentials: true,
             });
@@ -34,7 +34,7 @@ const Chat = ({ user2 }) => {
         return () => clearInterval(intervalId);
     }, [user2]);
     useEffect(() => {
-        const socket = new SockJS('http://localhost:9999/ws');
+        const socket = new SockJS('https://sdp-2200030709-production.up.railway.app/ws');
         const client = Stomp.over(socket);
 
         client.connect({}, () => {

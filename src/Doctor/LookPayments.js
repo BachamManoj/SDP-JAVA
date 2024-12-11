@@ -10,7 +10,7 @@ const LookPayments = () => {
     useEffect(() => {
         const fetchPayments = async () => {
             try {
-                const res = await axios.get('http://localhost:9999/getMyPayments', {
+                const res = await axios.get('https://sdp-2200030709-production.up.railway.app/getMyPayments', {
                     withCredentials: true,
                 });
                 setPayments(res.data);

@@ -22,7 +22,7 @@ function AdminLogin() {
     const adminLoginData = { email, password };
 
     try {
-      const response = await fetch('http://localhost:9999/adminLogin', {
+      const response = await fetch('https://sdp-2200030709-production.up.railway.app/adminLogin', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

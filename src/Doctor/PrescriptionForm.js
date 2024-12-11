@@ -12,7 +12,7 @@ const PrescriptionForm = ({ selectedPatient, onClose }) => {
   useEffect(() => {
     const fetchMedicines = async () => {
       try {
-        const response = await axios.get('http://localhost:9999/getAllMedicine');
+        const response = await axios.get('https://sdp-2200030709-production.up.railway.app/getAllMedicine');
         setMedicines(response.data || []);
       } catch (error) {
         console.error('Error fetching medicines:', error);
@@ -52,7 +52,7 @@ const PrescriptionForm = ({ selectedPatient, onClose }) => {
 
     try {
       console.log(prescription)
-      const response = await axios.post('http://localhost:9999/provideEPrescription', prescription);
+      const response = await axios.post('https://sdp-2200030709-production.up.railway.app/provideEPrescription', prescription);
       if (response.data) {
         alert('Prescription added successfully!');
         onClose();

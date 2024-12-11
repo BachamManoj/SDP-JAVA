@@ -37,7 +37,7 @@ const MedicineAdd = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:9999/addMedicine", formData, {
+      const response = await axios.post("https://sdp-2200030709-production.up.railway.app/addMedicine", formData, {
         headers: {
           "Content-Type": "application/json",
         },

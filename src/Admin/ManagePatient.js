@@ -10,7 +10,7 @@ const ManagePatient = () => {
     useEffect(() => {
         const fetchPatients = async () => {
             try {
-                const response = await fetch('http://localhost:9999/managePatient');
+                const response = await fetch('https://sdp-2200030709-production.up.railway.app/managePatient');
                 if (!response.ok) {
                     throw new Error('Failed to fetch patients');
                 }
@@ -30,7 +30,7 @@ const ManagePatient = () => {
         if (!window.confirm('Are you sure you want to delete this patient?')) return;
 
         try {
-            const response = await fetch(`http://localhost:9999/managePatient/${id}`, {
+            const response = await fetch(`https://sdp-2200030709-production.up.railway.app/managePatient/${id}`, {
                 method: 'DELETE',
             });
             if (!response.ok) {

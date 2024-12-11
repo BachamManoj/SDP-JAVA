@@ -17,7 +17,7 @@ const PostReport = () => {
     useEffect(() => {
         const fetchDoctorDetails = async () => {
             try {
-                const response = await axios.get('http://localhost:9999/getDoctorDetails', {
+                const response = await axios.get('https://sdp-2200030709-production.up.railway.app/getDoctorDetails', {
                     withCredentials: true,
                 });
                 setDoctorId(response.data.id);
@@ -29,7 +29,7 @@ const PostReport = () => {
 
         const fetchAppointments = async () => {
             try {
-                const response = await axios.get('http://localhost:9999/getPatientAppointments/1');
+                const response = await axios.get('https://sdp-2200030709-production.up.railway.app/getPatientAppointments/1');
                 setAppointments(response.data);
             } catch (error) {
                 console.error('Error fetching patient appointments:', error);
@@ -52,7 +52,7 @@ const PostReport = () => {
         };
 
         try {
-            const response = await axios.post('http://localhost:9999/createReport', reportData, {
+            const response = await axios.post('https://sdp-2200030709-production.up.railway.app/createReport', reportData, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -72,7 +72,7 @@ const PostReport = () => {
 
     const updateReportCompleted = async (appointmentId) => {
         try {
-            const response = await axios.put(`http://localhost:9999/updateReport/${appointmentId}`);
+            const response = await axios.put(`https://sdp-2200030709-production.up.railway.app/updateReport/${appointmentId}`);
             console.log('Report marked as completed:', response.data);
         } catch (error) {
             console.error('Error updating report status:', error);
@@ -82,7 +82,7 @@ const PostReport = () => {
 
     const handleViewReportClick = async (appointmentId) => {
         try {
-            const response = await axios.get(`http://localhost:9999/viewReport/${appointmentId}`);
+            const response = await axios.get(`https://sdp-2200030709-production.up.railway.app/viewReport/${appointmentId}`);
             setViewedReport(response.data);
             setDescription(response.data.description);
         } catch (error) {
@@ -98,7 +98,7 @@ const PostReport = () => {
 
         try {
             const response = await axios.put(
-                `http://localhost:9999/editDescription/${appointmentId}`,
+                `https://sdp-2200030709-production.up.railway.app/editDescription/${appointmentId}`,
                 updatedReport,
                 { headers: { 'Content-Type': 'application/json' } }
             );

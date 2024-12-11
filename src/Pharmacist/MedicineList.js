@@ -26,7 +26,7 @@ const MedicineList = () => {
 
   const fetchMedicines = async () => {
     try {
-      const response = await axios.get("http://localhost:9999/getAllMedicine");
+      const response = await axios.get("https://sdp-2200030709-production.up.railway.app/getAllMedicine");
       setMedicines(response.data);
       setFilteredMedicines(response.data);
       setLoading(false);
@@ -47,7 +47,7 @@ const MedicineList = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:9999/deleteMedicine/${id}`);
+      await axios.delete(`https://sdp-2200030709-production.up.railway.app/deleteMedicine/${id}`);
       setMedicines(medicines.filter((medicine) => medicine.id !== id));
       setFilteredMedicines(filteredMedicines.filter((medicine) => medicine.id !== id));
       alert("Medicine deleted successfully!");
@@ -75,7 +75,7 @@ const MedicineList = () => {
 
     try {
       const response = await axios.put(
-        `http://localhost:9999/updateMedicine/${currentMedicine.id}`,
+        `https://sdp-2200030709-production.up.railway.app/updateMedicine/${currentMedicine.id}`,
         formData,
         {
           headers: {

@@ -28,7 +28,7 @@ const ManageDoctor = () => {
     // Fetch all doctors from the backend
     const fetchDoctors = async () => {
         try {
-            const response = await axios.get('http://localhost:9999/manageDoctors');
+            const response = await axios.get('https://sdp-2200030709-production.up.railway.app/manageDoctors');
             setDoctors(response.data);
         } catch (error) {
             console.error('Error fetching doctors:', error);
@@ -67,7 +67,7 @@ const ManageDoctor = () => {
 
         try {
             const response = await axios.post(
-                'http://localhost:9999/addDoctor',
+                'https://sdp-2200030709-production.up.railway.app/addDoctor',
                 formData,
                 {
                     headers: {
@@ -97,7 +97,7 @@ const ManageDoctor = () => {
         const confirmDelete = window.confirm('Are you sure you want to delete this doctor?');
         if (confirmDelete) {
             try {
-                const response = await axios.delete(`http://localhost:9999/deleteDoctor/${doctorId}`);
+                const response = await axios.delete(`https://sdp-2200030709-production.up.railway.app/deleteDoctor/${doctorId}`);
                 setMessage(response.data);
                 fetchDoctors(); // Refresh the doctor list after deletion
             } catch (error) {

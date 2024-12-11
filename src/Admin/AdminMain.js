@@ -13,9 +13,9 @@ const AdminHomepage = () => {
         const fetchStats = async () => {
             try {
                 const [patientsRes, doctorsRes, appointmentsRes] = await Promise.all([
-                    fetch('http://localhost:9999/getTotalPatients'),
-                    fetch('http://localhost:9999/getTotalDoctor'),
-                    fetch('http://localhost:9999/getTotalAppointment'),
+                    fetch('https://sdp-2200030709-production.up.railway.app/getTotalPatients'),
+                    fetch('https://sdp-2200030709-production.up.railway.app/getTotalDoctor'),
+                    fetch('https://sdp-2200030709-production.up.railway.app/getTotalAppointment'),
                 ]);
 
                 if (!patientsRes.ok || !doctorsRes.ok || !appointmentsRes.ok) {

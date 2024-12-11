@@ -26,13 +26,13 @@ const PatientProfile = () => {
     useEffect(() => {
         const fetchPatientData = async () => {
             try {
-                const res = await axios.get('http://localhost:9999/getPatientDetails', {
+                const res = await axios.get('https://sdp-2200030709-production.up.railway.app/getPatientDetails', {
                     withCredentials: true,
                 });
                 setPatientData(res.data);
                 
                 if (res.data.id) {
-                    const imageRes = await axios.get(`http://localhost:9999/profile/${res.data.id}/image`, {
+                    const imageRes = await axios.get(`https://sdp-2200030709-production.up.railway.app/profile/${res.data.id}/image`, {
                         responseType: 'blob',
                         withCredentials: true,
                     });
@@ -78,7 +78,7 @@ const PatientProfile = () => {
         });
 
         try {
-            const res = await axios.put('http://localhost:9999/updatePatientProfile', formData, {
+            const res = await axios.put('https://sdp-2200030709-production.up.railway.app/updatePatientProfile', formData, {
                 withCredentials: true,
                 headers: { 'Content-Type': 'multipart/form-data' }
             });

@@ -11,7 +11,7 @@ const PharmacistDashboard = () => {
 
   const handleLogout = async () => {
     try {
-      const response = await axios.post("http://localhost:9999/Pharmacistlogout");
+      const response = await axios.post("https://sdp-2200030709-production.up.railway.app/Pharmacistlogout");
       if (response.status === 200) {
         alert(response.data); 
         navigate("/login"); 

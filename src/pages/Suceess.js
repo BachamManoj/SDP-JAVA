@@ -11,7 +11,7 @@ function SuccessPage() {
   useEffect(() => {
     const fetchPatientDetails = async () => {
       try {
-        const response = await fetch('http://localhost:9999/getPatientDetails', {
+        const response = await fetch('https://sdp-2200030709-production.up.railway.app/getPatientDetails', {
           method: 'GET',
           credentials: 'include',
         });

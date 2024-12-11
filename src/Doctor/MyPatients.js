@@ -21,14 +21,14 @@ const MyPatients = () => {
   useEffect(() => {
     const fetchDoctorDetails = async () => {
       try {
-        const doctorResponse = await axios.get('http://localhost:9999/getDoctorDetails', {
+        const doctorResponse = await axios.get('https://sdp-2200030709-production.up.railway.app/getDoctorDetails', {
           withCredentials: true,
         });
 
         if (doctorResponse.data) {
           setDoctor(doctorResponse.data);
           const appointmentsResponse = await axios.get(
-            `http://localhost:9999/getPatientAppointments/${doctorResponse.data.id}`
+            `https://sdp-2200030709-production.up.railway.app/getPatientAppointments/${doctorResponse.data.id}`
           );
           setPatients(appointmentsResponse.data || []);
         }

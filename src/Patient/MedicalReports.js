@@ -6,7 +6,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
 
 const MedicalReports = async (patientId) => {
   try {
-    const response = await fetch('http://localhost:9999/allAppointmentReports/1', {
+    const response = await fetch('https://sdp-2200030709-production.up.railway.app/allAppointmentReports/1', {
       method: 'GET',
       headers: {
         'Accept': 'application/pdf',

@@ -24,7 +24,7 @@ const TrackOrder = () => {
         }
 
         try {
-            const response = await fetch(`http://localhost:9999${endpoint}`, {
+            const response = await fetch(`https://sdp-2200030709-production.up.railway.app${endpoint}`, {
                 method: 'POST',
                 credentials: 'include',
             });
@@ -44,7 +44,7 @@ const TrackOrder = () => {
     const fetchOrders = async () => {
         setLoading(true);
         try {
-            const response = await fetch('http://localhost:9999/getAllOrders', {
+            const response = await fetch('https://sdp-2200030709-production.up.railway.app/getAllOrders', {
                 credentials: 'include',
             });
             if (!response.ok) {

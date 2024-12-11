@@ -22,7 +22,7 @@ function PharmacistLoginPage() {
     const pharmacistLoginData = { email, password };
 
     try {
-      const response = await fetch('http://localhost:9999/Pharmacistlogin', {
+      const response = await fetch('https://sdp-2200030709-production.up.railway.app/Pharmacistlogin', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

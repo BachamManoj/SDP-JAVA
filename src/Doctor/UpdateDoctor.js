@@ -23,14 +23,14 @@ const UpdateDoctor = () => {
   useEffect(() => {
     const fetchDoctorData = async () => {
       try {
-        const res = await axios.get("http://localhost:9999/getDoctorDetails", {
+        const res = await axios.get("https://sdp-2200030709-production.up.railway.app/getDoctorDetails", {
           withCredentials: true,
         });
         setDoctorData(res.data);
 
         if (res.data.id) {
           const imageRes = await axios.get(
-            `http://localhost:9999/Doctorprofile/${res.data.id}/image`,
+            `https://sdp-2200030709-production.up.railway.app/Doctorprofile/${res.data.id}/image`,
             { responseType: "blob", withCredentials: true }
           );
           setImagePreview(URL.createObjectURL(imageRes.data));
@@ -76,7 +76,7 @@ const UpdateDoctor = () => {
 
     try {
       await axios.put(
-        `http://localhost:9999/updateDoctorProfile/${doctorData.id}`,
+        `https://sdp-2200030709-production.up.railway.app/updateDoctorProfile/${doctorData.id}`,
         formData,
         {
           withCredentials: true,

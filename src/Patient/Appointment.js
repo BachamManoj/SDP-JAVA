@@ -22,13 +22,13 @@ const Appointment = () => {
     useEffect(() => {
         const initializeData = async () => {
             try {
-                const patientResponse = await axios.get("http://localhost:9999/getPatientDetails", {
+                const patientResponse = await axios.get("https://sdp-2200030709-production.up.railway.app/getPatientDetails", {
                     withCredentials: true,
                 });
                 setPatient(patientResponse.data);
 
                 const bookedDatesResponse = await axios.get(
-                    `http://localhost:9999/getAlreadybookedDates/${patientResponse.data.id}`
+                    `https://sdp-2200030709-production.up.railway.app/getAlreadybookedDates/${patientResponse.data.id}`
                 );
                 const formattedDates = bookedDatesResponse.data.map((date) =>
                     new Date(date).toLocaleDateString("en-CA")
@@ -72,7 +72,7 @@ const Appointment = () => {
 
         try {
             const response = await axios.post(
-                "http://localhost:9999/getbyspecialty",
+                "https://sdp-2200030709-production.up.railway.app/getbyspecialty",
                 speciality,
                 { headers: { "Content-Type": "text/plain" } }
             );
@@ -94,7 +94,7 @@ const Appointment = () => {
         try {
             const formattedDate = selectedDate.toLocaleDateString("en-CA");
             const response = await axios.get(
-                `http://localhost:9999/getDoctorFreeSlot/${selectedDoctor.id}/${formattedDate}`
+                `https://sdp-2200030709-production.up.railway.app/getDoctorFreeSlot/${selectedDoctor.id}/${formattedDate}`
             );
             filterAvailableSlots(response.data);
         } catch (error) {
@@ -144,7 +144,7 @@ const Appointment = () => {
                 timeSlot: selectedTime,
             };
 
-            const response = await axios.post("http://localhost:9999/makeAppointment", appointmentData);
+            const response = await axios.post("https://sdp-2200030709-production.up.railway.app/makeAppointment", appointmentData);
             alert(response.data || "Appointment successfully created!");
         } catch (error) {
             console.error("Error creating appointment:", error);

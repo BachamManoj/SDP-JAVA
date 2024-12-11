@@ -10,7 +10,7 @@ const FetchEPrescriptions = ({ appointmentId }) => {
   useEffect(() => {
     const fetchEPrescriptions = async () => {
       try {
-        const response = await fetch(`http://localhost:9999/getEPrescriptionsByAppointment/${appointmentId}`);
+        const response = await fetch(`https://sdp-2200030709-production.up.railway.app/getEPrescriptionsByAppointment/${appointmentId}`);
         if (!response.ok) {
           throw new Error('Failed to fetch data');
         }
@@ -41,7 +41,7 @@ const FetchEPrescriptions = ({ appointmentId }) => {
   const handleUpdateSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:9999/changeEPrescriptions/${updateForm.id}`, {
+      const response = await fetch(`https://sdp-2200030709-production.up.railway.app/changeEPrescriptions/${updateForm.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -67,7 +67,7 @@ const FetchEPrescriptions = ({ appointmentId }) => {
 
   const deleteEPrescription = async (id) => {
     try {
-      const response = await fetch(`http://localhost:9999/deleteEPrescription/${id}`, {
+      const response = await fetch(`https://sdp-2200030709-production.up.railway.app/deleteEPrescription/${id}`, {
         method: 'DELETE',
       });
 

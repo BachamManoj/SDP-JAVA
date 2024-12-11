@@ -14,13 +14,13 @@ const PatientHomePage = () => {
   useEffect(() => {
     const fetchPatientData = async () => {
       try {
-        const res = await axios.get('http://localhost:9999/getPatientDetails', {
+        const res = await axios.get('https://sdp-2200030709-production.up.railway.app/getPatientDetails', {
           withCredentials: true,
         });
         setPatient(res.data);
 
         const appointmentsRes = await axios.get(
-          `http://localhost:9999/getappointments/${res.data.id}`,
+          `https://sdp-2200030709-production.up.railway.app/getappointments/${res.data.id}`,
           { withCredentials: true }
         );
 
@@ -32,7 +32,7 @@ const PatientHomePage = () => {
         setAppointments(upcomingAppointments);
 
         const billsRes = await axios.get(
-          'http://localhost:9999/getPatientBillings',
+          'https://sdp-2200030709-production.up.railway.app/getPatientBillings',
           { withCredentials: true }
         );
         const pending = billsRes.data.filter((bill) => !bill.isPaid);
