@@ -1,0 +1,42 @@
+{
+  "files": {
+    "main.css": "/SDP-JAVA/static/css/main.5074cc08.css",
+    "main.js": "/SDP-JAVA/static/js/main.9022a3d3.js",
+    "static/js/453.d855a71b.chunk.js": "/SDP-JAVA/static/js/453.d855a71b.chunk.js",
+    "static/media/fontawesome-webfont.svg?v=4.7.0": "/SDP-JAVA/static/media/fontawesome-webfont.c1e38fd9e0e74ba58f7a.svg",
+    "static/media/banner.jpeg": "/SDP-JAVA/static/media/banner.d8f01893491b6f5bb049.jpeg",
+    "static/media/fontawesome-webfont.eot": "/SDP-JAVA/static/media/fontawesome-webfont.8b43027f47b20503057d.eot",
+    "static/media/fontawesome-webfont.ttf?v=4.7.0": "/SDP-JAVA/static/media/fontawesome-webfont.1e59d2330b4c6deb84b3.ttf",
+    "static/media/banner.jpg": "/SDP-JAVA/static/media/banner.eaf50ad39f0f60b78356.jpg",
+    "static/media/bg-2.jpg": "/SDP-JAVA/static/media/bg-2.dd9d22e0fc44a06f267e.jpg",
+    "static/media/fontawesome-webfont.woff?v=4.7.0": "/SDP-JAVA/static/media/fontawesome-webfont.f691f37e57f04c152e23.woff",
+    "static/media/22.jpg": "/SDP-JAVA/static/media/22.266b871b2468ee0b0d34.jpg",
+    "static/media/fontawesome-webfont.woff2?v=4.7.0": "/SDP-JAVA/static/media/fontawesome-webfont.20fd1704ea223900efa9.woff2",
+    "static/media/LOGO.jpg": "/SDP-JAVA/static/media/LOGO.1709e193ed68fa47cf85.jpg",
+    "static/media/img-3.jpg": "/SDP-JAVA/static/media/img-3.ce8dd0696d92bc036350.jpg",
+    "static/media/service-1.jpg": "/SDP-JAVA/static/media/service-1.5f0550dd1987d5e8daff.jpg",
+    "static/media/img-1.jpg": "/SDP-JAVA/static/media/img-1.aaa9af25a4c23b86f812.jpg",
+    "static/media/service-3.jpg": "/SDP-JAVA/static/media/service-3.0682de6b2b60a20a6ac8.jpg",
+    "static/media/service-4.jpg": "/SDP-JAVA/static/media/service-4.63d1c531400e5eaeb5b8.jpg",
+    "static/media/img-2.jpg": "/SDP-JAVA/static/media/img-2.1b8360ef644238eb3020.jpg",
+    "static/media/service-2.jpg": "/SDP-JAVA/static/media/service-2.c033afb99a3803e8fc04.jpg",
+    "static/media/service-6.jpg": "/SDP-JAVA/static/media/service-6.af0e356163445d20568c.jpg",
+    "static/media/service-8.jpg": "/SDP-JAVA/static/media/service-8.b980d8b6156ea7ca13ea.jpg",
+    "static/media/about-1.jpg": "/SDP-JAVA/static/media/about-1.7a7627e42ed013419502.jpg",
+    "static/media/about-3.jpg": "/SDP-JAVA/static/media/about-3.60f92970c592e0aa779e.jpg",
+    "static/media/about-4.jpg": "/SDP-JAVA/static/media/about-4.6631cf5a0b038344bc4e.jpg",
+    "static/media/about-2.jpg": "/SDP-JAVA/static/media/about-2.13554dd5563b4f16bdf9.jpg",
+    "static/media/slick.svg": "/SDP-JAVA/static/media/slick.2630a3e3eab21c607e21.svg",
+    "static/media/slick.eot": "/SDP-JAVA/static/media/slick.a4e97f5a2a64f0ab1323.eot",
+    "static/media/slick.ttf": "/SDP-JAVA/static/media/slick.c94f7671dcc99dce43e2.ttf",
+    "static/media/slick.woff": "/SDP-JAVA/static/media/slick.295183786cd8a1389865.woff",
+    "index.html": "/SDP-JAVA/index.html",
+    "main.5074cc08.css.map": "/SDP-JAVA/static/css/main.5074cc08.css.map",
+    "main.9022a3d3.js.map": "/SDP-JAVA/static/js/main.9022a3d3.js.map",
+    "453.d855a71b.chunk.js.map": "/SDP-JAVA/static/js/453.d855a71b.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.5074cc08.css",
+    "static/js/main.9022a3d3.js"
+  ]
+}
