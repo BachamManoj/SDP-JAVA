@@ -40,7 +40,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "npm install --omit=dev && npm run build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "prune-and-build": "npm prune && npm run build"
