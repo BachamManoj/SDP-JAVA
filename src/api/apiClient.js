@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: "http://localhost:9999",
+    baseURL: "https://sdp-2200030709-production-medicalappointment.up.railway.app",
 });
 
 api.interceptors.request.use((config) => {
