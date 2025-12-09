@@ -1,77 +1,107 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../api/apiClient";    // ✅ Use centralized axios with JWT
 import PatientDashboard from "./PatientDashboard";
 
 const PatientReport = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [patient, setPatient] = useState(null);
+  const [error, setError] = useState(null);
 
+  const BASE_URL = api.defaults.baseURL;   // ❤️ No hardcoding
+
+  // ---------------------------------------------------
+  // FETCH PATIENT DETAILS (JWT protected)
+  // ---------------------------------------------------
   useEffect(() => {
     const fetchPatientDetails = async () => {
       try {
-        const res = await axios.get('https://sdp-2200030709-production.up.railway.app/getPatientDetails', { withCredentials: true });
+        const res = await api.get("/getPatientDetails");
         setPatient(res.data);
-      } catch (error) {
-        console.error("Error fetching patient details", error);
+      } catch (err) {
+        console.error("Error fetching patient details", err);
+        setError("Failed to load patient details.");
       }
     };
 
     fetchPatientDetails();
   }, []);
 
+  // ---------------------------------------------------
+  // FETCH COMPLETED APPOINTMENTS
+  // ---------------------------------------------------
   useEffect(() => {
-    if (patient) {
-      const fetchAppointments = async () => {
-        setLoading(true);
-        try {
-          const response = await axios.get(`https://sdp-2200030709-production.up.railway.app/getappointments/${patient.id}`);
-          const completedAppointments = response.data.filter(appointment => appointment.reportCompleted);
-          setAppointments(completedAppointments);
-        } catch (error) {
-          console.error("Error fetching appointments", error);
-        } finally {
-          setLoading(false);
-        }
-      };
+    if (!patient) return;
 
-      fetchAppointments();
-    }
+    const fetchAppointments = async () => {
+      setLoading(true);
+      try {
+        const res = await api.get(`/getappointments/${patient.id}`);
+
+        // Filter completed appointments with report
+        const completedAppointments = res.data.filter(
+          (appt) => appt.reportCompleted
+        );
+
+        setAppointments(completedAppointments);
+      } catch (err) {
+        console.error("Error fetching appointments", err);
+        setError("Unable to fetch appointments.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAppointments();
   }, [patient]);
 
+  // ---------------------------------------------------
+  // FETCH MEDICAL REPORT PDF
+  // ---------------------------------------------------
   const fetchReport = async (appointmentId, doctorId) => {
     try {
-      const response = await axios.get(`https://sdp-2200030709-production.up.railway.app/viewPatientMedicalReportbyPatient/${appointmentId}/${doctorId}`, {
-        responseType: 'arraybuffer', 
-        withCredentials: true
-      });
+      const res = await api.get(
+        `/viewPatientMedicalReportbyPatient/${appointmentId}/${doctorId}`,
+        { responseType: "arraybuffer" }       // needed for PDF
+      );
 
-      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const blob = new Blob([res.data], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
-      window.open(url, '_blank'); 
 
-    } catch (error) {
-      console.error("Error fetching medical report", error);
+      window.open(url, "_blank");
+    } catch (err) {
+      console.error("Error fetching medical report", err);
+      alert("Failed to load report. Try again later.");
     }
   };
 
   return (
     <div className="dashboard-container d-flex">
       <PatientDashboard />
-      <div className="container" style={{marginTop:'100px'}}>
+
+      <div className="container" style={{ marginTop: "100px" }}>
         <h2 className="mb-4">Patient Medical Reports</h2>
 
-       
-        {loading && <div className="spinner-border text-primary" role="status"><span className="visually-hidden">Loading...</span></div>}
+        {/* Error */}
+        {error && <div className="alert alert-danger text-center">{error}</div>}
 
-        
-        {patient && (
+        {/* Welcome Message */}
+        {patient && !error && (
           <div className="alert alert-info">
-            <h4>Welcome, {patient.firstName} {patient.lastName}</h4>
+            <h4>
+              Welcome, {patient.firstName} {patient.lastName}
+            </h4>
           </div>
         )}
 
-        
+        {/* Loading */}
+        {loading && (
+          <div className="text-center mt-3">
+            <div className="spinner-border text-primary"></div>
+          </div>
+        )}
+
+        {/* Reports Table */}
         {!loading && appointments.length > 0 && (
           <table className="table table-bordered table-striped table-hover">
             <thead className="table-dark">
@@ -83,15 +113,15 @@ const PatientReport = () => {
               </tr>
             </thead>
             <tbody>
-              {appointments.map(appointment => (
-                <tr key={appointment.id}>
-                  <td>{appointment.id}</td>
-                  <td>{appointment.doctor.name}</td>
-                  <td>{new Date(appointment.date).toLocaleString()}</td>
+              {appointments.map((appt) => (
+                <tr key={appt.id}>
+                  <td>{appt.id}</td>
+                  <td>{appt.doctor.name}</td>
+                  <td>{new Date(appt.date).toLocaleDateString()}</td>
                   <td>
                     <button
                       className="btn btn-primary"
-                      onClick={() => fetchReport(appointment.id, appointment.doctor.id)}
+                      onClick={() => fetchReport(appt.id, appt.doctor.id)}
                     >
                       View Report
                     </button>
@@ -102,9 +132,9 @@ const PatientReport = () => {
           </table>
         )}
 
-       
-        {!loading && appointments.length === 0 && (
-          <div className="alert alert-warning" role="alert">
+        {/* No reports */}
+        {!loading && appointments.length === 0 && !error && (
+          <div className="alert alert-warning text-center">
             No completed reports found for your appointments.
           </div>
         )}

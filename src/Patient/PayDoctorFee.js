@@ -1,221 +1,204 @@
-import React, { useState, useEffect } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import PatientDashboard from './PatientDashboard';
+import React, { useState, useEffect } from "react";
+import api from "../api/apiClient";
+import "bootstrap/dist/css/bootstrap.min.css";
+import PatientDashboard from "./PatientDashboard";
 
 const PayDoctorFee = () => {
-    const [payments, setPayments] = useState([]);
-    const [ePrescriptionPayments, setEPrescriptionPayments] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [selectedPayment, setSelectedPayment] = useState(null);
-    const [isProcessing, setIsProcessing] = useState(false);
+  const [payments, setPayments] = useState([]);
+  const [ePrescriptionPayments, setEPrescriptionPayments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedPayment, setSelectedPayment] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
-    useEffect(() => {
-        const fetchPayments = async () => {
-            try {
-                const response = await fetch('https://sdp-2200030709-production.up.railway.app/getPatientBillings', { credentials: 'include' });
-                const ePresResponse = await fetch('https://sdp-2200030709-production.up.railway.app/getPatientBillingsEprescription', { credentials: 'include' });
+  /** ------------------------------------------------------
+   * FETCH BILLINGS
+   ------------------------------------------------------ */
+  useEffect(() => {
+    const loadPayments = async () => {
+      try {
+        const res1 = await api.get("/getPatientBillings");
+        const res2 = await api.get("/getPatientBillingsEprescription");
 
-                if (!response.ok || !ePresResponse.ok) {
-                    throw new Error('Error fetching payments.');
-                }
-
-                const paymentData = await response.json();
-                const ePrescriptionData = await ePresResponse.json();
-
-                setPayments(paymentData);
-                setEPrescriptionPayments(ePrescriptionData);
-            } catch (error) {
-                setError(error.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchPayments();
-    }, []);
-
-    const handlePayNow = async () => {
-        if (!selectedPayment) {
-            setError('Please select a payment');
-            return;
-        }
-    
-        setIsProcessing(true);
-        try {
-            const orderResponse = await fetch('https://sdp-2200030709-production.up.railway.app/payments/createOrder', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                body: JSON.stringify(selectedPayment),
-                credentials: 'include',
-            });
-    
-            if (!orderResponse.ok) {
-                throw new Error('Failed to create payment order');
-            }
-    
-            const orderData = await orderResponse.json();
-            const options = {
-                key: 'rzp_test_SBtB9sxEr3rXKz',
-                amount: orderData.amount,
-                currency: orderData.currency,
-                name: 'Doctor Fee Payment',
-                description: 'Pay your doctor fee',
-                order_id: orderData.id,
-                handler: async (response) => {
-                    const paymentData = {
-                        ...selectedPayment,
-                        paymentDate: new Date().toISOString(),
-                        paymentMethod: 'Unknown',
-                        isPaid: true,
-                        razorpayPaymentId: response.razorpay_payment_id,
-                        razorpayOrderId: response.razorpay_order_id,
-                        razorpaySignature: response.razorpay_signature,
-                    };
-    
-                    try {
-                        const paymentDetailsResponse = await fetch(`https://sdp-2200030709-production.up.railway.app/payments/paymentDetails/${response.razorpay_payment_id}`, {
-                            method: 'GET',
-                            headers: { 'Authorization': `Bearer ${sessionStorage.getItem('auth_token')}` },
-                        });
-    
-                        if (paymentDetailsResponse.ok) {
-                            const paymentDetails = await paymentDetailsResponse.json();
-                            if (paymentDetails.card) {
-                                paymentData.paymentMethod = `Card - ${paymentDetails.card.network} ${paymentDetails.card.type}`;
-                            } else if (paymentDetails.wallet) {
-                                paymentData.paymentMethod = 'Wallet';
-                            } else if (paymentDetails.vpa) {
-                                paymentData.paymentMethod = 'UPI';
-                            } else if (paymentDetails.bank) {
-                                paymentData.paymentMethod = 'Net Banking';
-                            }
-                        }
-    
-                        const confirmResponse = await fetch('https://sdp-2200030709-production.up.railway.app/payments/payNow', {
-                            method: 'PUT',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify(paymentData),
-                            credentials: 'include',
-                        });
-    
-                        if (!confirmResponse.ok) {
-                            throw new Error('Payment confirmation failed');
-                        }
-    
-                        const updatedPayment = await confirmResponse.json();
-                        setPayments(payments.map((p) => (p.id === updatedPayment.id ? updatedPayment : p)));
-                        setEPrescriptionPayments(
-                            ePrescriptionPayments.map((p) => (p.id === updatedPayment.id ? updatedPayment : p))
-                        );
-    
-                        if (ePrescriptionPayments.some((p) => p.id === selectedPayment.id)) {
-                            const confirmOrderResponse = await fetch(`https://sdp-2200030709-production.up.railway.app/confirmOrder/${selectedPayment.appointment.id}`, {
-                                method: 'POST',
-                                credentials: 'include',
-                            });
-    
-                            if (!confirmOrderResponse.ok) {
-                                throw new Error('Order confirmation failed');
-                            }
-    
-                            const confirmOrderMessage = await confirmOrderResponse.text();
-                            console.log(confirmOrderMessage); 
-                            alert('Order confirmed successfully!');
-                        }
-                    } catch (error) {
-                        setError(error.message);
-                    } finally {
-                        setIsProcessing(false);
-                        setSelectedPayment(null);
-                    }
-                },
-                prefill: {
-                    email: 'user@example.com',
-                    contact: '9999999999',
-                },
-                theme: { color: '#3399cc' },
-            };
-    
-            const razorpay = new window.Razorpay(options);
-            razorpay.open();
-        } catch (error) {
-            setError(error.message);
-            setIsProcessing(false);
-        }
+        setPayments(res1.data || []);
+        setEPrescriptionPayments(res2.data || []);
+      } catch (err) {
+        setError("Failed to load payment information");
+      } finally {
+        setLoading(false);
+      }
     };
-    
-    
 
-    if (loading) {
-        return <p>Loading payment details...</p>;
+    loadPayments();
+  }, []);
+
+  /** ------------------------------------------------------
+   * HANDLE RAZORPAY PAYMENT
+   ------------------------------------------------------ */
+  const handlePayNow = async () => {
+    if (!selectedPayment) return setError("Please select a payment");
+
+    setIsProcessing(true);
+
+    try {
+      /** Step 1 — Create Razorpay Order */
+      const orderRes = await api.post("/payments/createOrder", selectedPayment);
+      const order = orderRes.data;
+
+      const options = {
+        key: "rzp_test_SBtB9sxEr3rXKz",
+        amount: order.amount,
+        currency: order.currency,
+        name: "Doctor Fee Payment",
+        description: "Pay your doctor fee",
+        order_id: order.id,
+
+        handler: async (response) => {
+          const paymentData = {
+            ...selectedPayment,
+            paymentDate: new Date().toISOString(),
+            isPaid: true,
+            razorpayPaymentId: response.razorpay_payment_id,
+            razorpayOrderId: response.razorpay_order_id,
+            razorpaySignature: response.razorpay_signature,
+          };
+
+          try {
+            /** Step 2 — Find Payment Method */
+            const payInfo = await api.get(
+              `/payments/paymentDetails/${response.razorpay_payment_id}`
+            );
+
+            const details = payInfo.data;
+
+            if (details.card)
+              paymentData.paymentMethod = `Card - ${details.card.network}`;
+            else if (details.wallet)
+              paymentData.paymentMethod = "Wallet";
+            else if (details.vpa)
+              paymentData.paymentMethod = "UPI";
+            else if (details.bank)
+              paymentData.paymentMethod = "Net Banking";
+            else paymentData.paymentMethod = "Unknown";
+
+            /** Step 3 — Save Final Payment */
+            const confirmRes = await api.put("/payments/payNow", paymentData);
+            const updatedPayment = confirmRes.data;
+
+            setEPrescriptionPayments((prev) =>
+              prev.map((p) => (p.id === updatedPayment.id ? updatedPayment : p))
+            );
+
+            /** Step 4 — If ePrescription → confirm order */
+            const isEPres = ePrescriptionPayments.some(
+              (p) => p.id === updatedPayment.id
+            );
+
+            if (isEPres) {
+              const ord = await api.post(
+                `/confirmOrder/${updatedPayment.appointment.id}`
+              );
+
+              if (ord.status === 200) alert("Order Confirmed Successfully!");
+            }
+          } catch (err) {
+            setError("Error confirming payment");
+          } finally {
+            setIsProcessing(false);
+            setSelectedPayment(null);
+          }
+        },
+
+        theme: { color: "#3399cc" },
+      };
+
+      const razorpay = new window.Razorpay(options);
+      razorpay.open();
+    } catch (err) {
+      setError("Payment initialization failed");
+      setIsProcessing(false);
     }
+  };
 
-    if (error) {
-        return <p>Error: {error}</p>;
-    }
+  if (loading)
+    return <p className="text-center mt-5">Loading payment details...</p>;
 
-    return (
-        <div className="dashboard-container d-flex">
-            <PatientDashboard />
-            <div className="container" style={{ marginTop: 75 }}>
-                
+  if (error)
+    return <p className="text-danger text-center mt-5">Error: {error}</p>;
 
-                <h2 className="text-center mt-5 mb-4">DuePayment Fees</h2>
-                {ePrescriptionPayments.length > 0 ? (
-                    <table className="table table-striped table-bordered">
-                        <thead className="thead-dark">
-                            <tr>
-                                <th>Appointment ID</th>
-                                <th>Amount</th>
-                                <th>Payment Date</th>
-                                <th>Payment Method</th>
-                                <th>Status</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {ePrescriptionPayments.map((payment) => (
-                                <tr key={payment.id}>
-                                    <td>{payment.appointment.id}</td>
-                                    <td>Rs {payment.amount.toFixed(2)}</td>
-                                    <td>{payment.paymentDate}</td>
-                                    <td>{payment.paymentMethod}</td>
-                                    <td>
-                                        <span className={`badge ${payment.isPaid ? 'bg-success' : 'bg-warning'}`}>
-                                            {payment.isPaid ? 'Paid' : 'Unpaid'}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        {!payment.isPaid && (
-                                            <button
-                                                className="btn btn-primary"
-                                                onClick={() => setSelectedPayment(payment)}
-                                            >
-                                                Pay Now
-                                            </button>
-                                        )}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                ) : (
-                    <p className="text-center">No outstanding ePrescription fees.</p>
-                )}
+  /** ------------------------------------------------------
+   * UI Rendering
+   ------------------------------------------------------ */
+  return (
+    <div className="dashboard-container d-flex">
+      <PatientDashboard />
 
-                {selectedPayment && !isProcessing && (
-                    <div className="mt-4">
-                        <button className="btn btn-success mt-3" onClick={handlePayNow}>
-                            Pay Now
-                        </button>
-                    </div>
-                )}
+      <div className="container" style={{ marginTop: 75 }}>
+        <h2 className="text-center mb-4">Pending E-Prescription Payments</h2>
 
-                {isProcessing && <div className="text-center mt-4">Processing payment...</div>}
-            </div>
-        </div>
-    );
+        {ePrescriptionPayments.length > 0 ? (
+          <table className="table table-striped table-bordered">
+            <thead className="table-dark">
+              <tr>
+                <th>Appointment ID</th>
+                <th>Amount</th>
+                <th>Payment Date</th>
+                <th>Method</th>
+                <th>Status</th>
+                <th>Pay</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ePrescriptionPayments.map((p) => (
+                <tr key={p.id}>
+                  <td>{p.appointment.id}</td>
+                  <td>₹ {p.amount.toFixed(2)}</td>
+                  <td>{p.paymentDate || "-"}</td>
+                  <td>{p.paymentMethod || "-"}</td>
+                  <td>
+                    <span
+                      className={`badge ${
+                        p.isPaid ? "bg-success" : "bg-warning"
+                      }`}
+                    >
+                      {p.isPaid ? "Paid" : "Unpaid"}
+                    </span>
+                  </td>
+                  <td>
+                    {!p.isPaid && (
+                      <button
+                        className="btn btn-primary"
+                        onClick={() => setSelectedPayment(p)}
+                      >
+                        Select
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p className="text-center">No outstanding e-prescription fees.</p>
+        )}
+
+        {selectedPayment && !isProcessing && (
+          <div className="text-center mt-4">
+            <button className="btn btn-success" onClick={handlePayNow}>
+              Pay Now
+            </button>
+          </div>
+        )}
+
+        {isProcessing && (
+          <div className="text-center mt-4">
+            <div className="spinner-border text-primary"></div>
+            <p>Processing payment...</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default PayDoctorFee;

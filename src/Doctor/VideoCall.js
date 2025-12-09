@@ -1,75 +1,59 @@
-import * as React from 'react';
-import { ZegoUIKitPrebuilt } from '@zegocloud/zego-uikit-prebuilt';
-import axios from 'axios';
-import { useLocation } from 'react-router-dom'; // Importing useLocation for accessing passed state
+import React, { useEffect, useState } from "react";
+import { ZegoUIKitPrebuilt } from "@zegocloud/zego-uikit-prebuilt";
+import api from "../api/apiClient";
+import { useLocation } from "react-router-dom";
 
-function randomID(len) {
-  let result = '';
-  const chars = '12345qwertyuiopasdfgh67890jklmnbvcxzMNBVCZXASDQWERTYHGFUIOLKJP';
-  len = len || 5;
+function randomID(len = 5) {
+  const chars =
+    "12345qwertyuiopasdfgh67890jklmnbvcxzMNBVCZXASDQWERTYHGFUIOLKJP";
+  let result = "";
   for (let i = 0; i < len; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
+    result += chars[Math.floor(Math.random() * chars.length)];
   }
   return result;
 }
 
-export function getUrlParams(url = window.location.href) {
-  const urlStr = url.split('?')[1];
-  return new URLSearchParams(urlStr);
-}
-
 export default function VideoCall() {
-  const location = useLocation(); // Using useLocation to get passed state
-  const [containerRef, setContainerRef] = React.useState(null); // State to store ref of the container
+  const location = useLocation();
+  const [containerRef, setContainerRef] = useState(null);
 
-  const roomID = getUrlParams().get('roomID') || randomID(5);
-  const appointmentID = location?.state?.appointmentID || getUrlParams().get('appointmentID'); // Access appointmentID from passed state or URL
+  const roomID =
+    new URLSearchParams(window.location.search).get("roomID") || randomID(5);
 
-  React.useEffect(() => {
-    if (containerRef) {
-      const appID = 740050980;
-      const serverSecret = '43894ba0c99ad5a8e0ffab01661b63a7';
-      const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
-        appID,
-        serverSecret,
-        roomID,
-        randomID(5),
-        randomID(5)
-      );
+  const appointmentID =
+    location?.state?.appointmentID ||
+    new URLSearchParams(window.location.search).get("appointmentID");
 
-      // Generate video call URL
-      const videoCallUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname}?roomID=${roomID}`;
+  useEffect(() => {
+    if (!containerRef) return;
 
-      // Send the generated video call URL to the backend (only if appointmentID exists)
-      if (appointmentID) {
-        axios.put('https://sdp-2200030709-production.up.railway.app/OnlineConferance', null, {
-          params: { url: videoCallUrl, appointmentid: appointmentID },
-        })
-        .then(() => console.log('Video call URL updated successfully'))
-        .catch((error) => console.error('Failed to update video call URL', error));
-      }
+    const appID = 740050980;
+    const serverSecret = "43894ba0c99ad5a8e0ffab01661b63a7";
 
-      // Start the video call with Zego
-      const zp = ZegoUIKitPrebuilt.create(kitToken);
-      zp.joinRoom({
-        container: containerRef,
-        sharedLinks: [
-          {
-            name: 'Personal link',
-            url: videoCallUrl,
-          },
-        ],
-        scenario: {
-          mode: ZegoUIKitPrebuilt.OneONoneCall,
-        },
+    const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
+      appID,
+      serverSecret,
+      roomID,
+      randomID(),
+      randomID()
+    );
+
+    const videoCallUrl = `${window.location.origin}${window.location.pathname}?roomID=${roomID}&appointmentID=${appointmentID}`;
+
+    if (appointmentID) {
+      api.put("/OnlineConferance", null, {
+        params: { url: videoCallUrl, appointmentId: appointmentID }
       });
     }
-  }, [containerRef, appointmentID]); // Dependency array to run this effect when component mounts or appointmentID changes
 
-  return (
-    <div
-      ref={setContainerRef} 
-      style={{ width: '100%', height: '130vh' }}
-    ></div>
-  );
+    const zp = ZegoUIKitPrebuilt.create(kitToken);
+
+    zp.joinRoom({
+      container: containerRef,
+      sharedLinks: [{ name: "Call Link", url: videoCallUrl }],
+      scenario: { mode: ZegoUIKitPrebuilt.OneONoneCall }
+    });
+  }, [containerRef, appointmentID, roomID]);
+
+  return <div ref={setContainerRef} style={{ width: "100%", height: "130vh" }}></div>;
 }

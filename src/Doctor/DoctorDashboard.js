@@ -1,77 +1,112 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import './DoctorDashboard.css'
-import { Link } from 'react-router-dom';
-import logo from '../images/Life1.png';
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import "./DoctorDashboard.css";
+import logo from "../images/Life1.png";
+import api from "../api/apiClient";
 
 const DoctorDashboard = () => {
-    const [doctor, setDoctor] = useState(null);
-    const [profileImage, setProfileImage] = useState(null);
+  const [doctor, setDoctor] = useState(null);
+  const [profileImage, setProfileImage] = useState(null);
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        const fetchDoctorDetails = async () => {
-            try {
-                const res = await axios.get('https://sdp-2200030709-production.up.railway.app/getDoctorDetails', {
-                    withCredentials: true,
-                });
-                setDoctor(res.data);
+  useEffect(() => {
+    const loadDoctor = async () => {
+      try {
+        const res = await api.get("/getDoctorDetails");
+        const doctorData = res.data;
 
-                const imageRes = await axios.get(`https://sdp-2200030709-production.up.railway.app/Doctorprofile/${res.data.id}/image`, {
-                    responseType: 'blob',
-                    withCredentials: true,
-                });
-                setProfileImage(URL.createObjectURL(imageRes.data));
-            } catch (error) {
-                console.error("Error fetching doctor details:", error);
-            }
-        };
+        setDoctor(doctorData);
 
-        fetchDoctorDetails();
-    }, []);
+        // Fetch Profile Image
+        const imageRes = await api.get(
+          `/Doctorprofile/${doctorData.id}/image`,
+          { responseType: "blob" }
+        );
 
-    const handleLogout = async () => {
-        try {
-            await axios.post('https://sdp-2200030709-production.up.railway.app/doctorlogout', {}, { withCredentials: true });
-            setDoctor(null);
-            setProfileImage(null);
-            alert("Logged out successfully.");
-            window.location.href = '/login';
-        } catch (error) {
-            console.error("Error logging out:", error);
-        }
+        setProfileImage(URL.createObjectURL(imageRes.data));
+      } catch (err) {
+        console.error("Error loading doctor dashboard:", err);
+        navigate("/doctorLogin"); // Auto redirect if unauthorized
+      }
     };
 
-    return (
-        <div>
-            <div className="custom-navbar-container">
-                <nav className="custom-navbar">
-                    <h1 className="custom-navbar-title">Doctor Dashboard</h1>
-                </nav>
+    loadDoctor();
+  }, [navigate]);
+
+  const handleLogout = async () => {
+    try {
+      await api.post("/doctorlogout");
+
+      localStorage.removeItem("token");
+      localStorage.removeItem("doctor");
+
+      navigate("/doctorLogin");
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
+  };
+
+  return (
+    <div>
+      {/* Top Navbar */}
+      <div className="custom-navbar-container">
+        <nav className="custom-navbar">
+          <h1 className="custom-navbar-title">Doctor Dashboard</h1>
+        </nav>
+      </div>
+
+      {/* Sidebar */}
+      <div className="custom-dashboard-container">
+        <div className="custom-sidebar">
+
+          <div className="custom-logo-container">
+            <img src={logo} alt="Logo" className="custom-hospital-logo" />
+          </div>
+
+          {profileImage && (
+            <div className="custom-profile-image-container">
+              <img
+                src={profileImage}
+                alt="Profile"
+                className="custom-profile-image"
+              />
             </div>
-            <div className="custom-dashboard-container" >
-                <div className="custom-sidebar">
-                    <div className="custom-logo-container">
-                        <img src={logo} alt="Hospital Logo" className="custom-hospital-logo" />
-                    </div>
-                    {profileImage && (
-                        <div className="custom-profile-image-container">
-                            <img src={profileImage} alt="Profile" className="custom-profile-image" />
-                        </div>
-                    )}
-                    <div className="custom-navbar-center">
-                        <Link className="custom-navbar-item" to="/doctorHomepage">Dashboard</Link>
-                        <Link className="custom-navbar-item" to="/mySchedule">mySchedules</Link>
-                        <Link className="custom-navbar-item" to="/viewMyPaymentsbyPatients">view Payments</Link>
-                        <Link className="custom-navbar-item" to="/patientRecordsbyDocter">Patient Records</Link>
-                        <Link className="custom-navbar-item" to="/postReportsData">Medical Records</Link>
-                        <Link className="custom-navbar-item" to="/feedback">My feedback</Link>
-                        <Link className="custom-navbar-item" to="/updateDoctorProfile">My Profile</Link>
-                        <a className="custom-navbar-item" href="#" onClick={handleLogout}>Logout</a> 
-                    </div>
-                </div>
-            </div>
+          )}
+
+          <div className="custom-navbar-center">
+            <Link className="custom-navbar-item" to="/doctorHomepage">
+              Dashboard
+            </Link>
+            <Link className="custom-navbar-item" to="/mySchedule">
+              My Schedules
+            </Link>
+            <Link className="custom-navbar-item" to="/viewMyPaymentsbyPatients">
+              View Payments
+            </Link>
+            <Link className="custom-navbar-item" to="/patientRecordsbyDocter">
+              Patient Records
+            </Link>
+            <Link className="custom-navbar-item" to="/postReportsData">
+              Medical Records
+            </Link>
+            <Link className="custom-navbar-item" to="/feedback">
+              My Feedback
+            </Link>
+            <Link className="custom-navbar-item" to="/updateDoctorProfile">
+              My Profile
+            </Link>
+
+            <button
+              className="custom-navbar-item custom-logout-btn"
+              onClick={handleLogout}
+            >
+              Logout
+            </button>
+          </div>
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default DoctorDashboard;

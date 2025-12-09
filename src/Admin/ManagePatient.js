@@ -1,61 +1,52 @@
 import React, { useEffect, useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import AdminDashboard from './AdminDashboard';
+import api from "../api/apiClient";
 
 const ManagePatient = () => {
     const [patients, setPatients] = useState([]);
-    const [error, setError] = useState('');
+    const [error, setError] = useState("");
 
-    // Fetch all patients
+    /** Fetch all patients */
+    const fetchPatients = async () => {
+        try {
+            const response = await api.get("/managePatient");
+            setPatients(response.data);
+        } catch (err) {
+            console.error("Error fetching patients:", err);
+            setError("Unable to fetch patient data. Please try again later.");
+        }
+    };
+
     useEffect(() => {
-        const fetchPatients = async () => {
-            try {
-                const response = await fetch('https://sdp-2200030709-production.up.railway.app/managePatient');
-                if (!response.ok) {
-                    throw new Error('Failed to fetch patients');
-                }
-                const data = await response.json();
-                setPatients(data);
-            } catch (err) {
-                console.error(err);
-                setError('Unable to fetch patient data. Please try again later.');
-            }
-        };
-
         fetchPatients();
     }, []);
 
-    // Delete a patient by ID
+    /** Delete patient by ID */
     const handleDelete = async (id) => {
-        if (!window.confirm('Are you sure you want to delete this patient?')) return;
+        if (!window.confirm("Are you sure you want to delete this patient?")) return;
 
         try {
-            const response = await fetch(`https://sdp-2200030709-production.up.railway.app/managePatient/${id}`, {
-                method: 'DELETE',
-            });
-            if (!response.ok) {
-                throw new Error('Failed to delete patient');
-            }
-            setPatients((prevPatients) => prevPatients.filter((patient) => patient.id !== id));
+            await api.delete(`/managePatient/${id}`);
+            setPatients((prev) => prev.filter((p) => p.id !== id));
         } catch (err) {
-            console.error(err);
-            setError('Unable to delete patient. Please try again later.');
+            console.error("Error deleting patient:", err);
+            setError("Unable to delete patient. Please try again later.");
         }
     };
 
     return (
         <div className="dashboard-container d-flex">
             <AdminDashboard />
+
             <div className="container" style={{ marginTop: 75 }}>
                 <div className="alert alert-primary text-center shadow-sm">
                     <h2>Manage Patients</h2>
                     <p>View, manage, and delete patient records easily.</p>
                 </div>
-                {error && (
-                    <div className="alert alert-danger" role="alert">
-                        {error}
-                    </div>
-                )}
+
+                {error && <div className="alert alert-danger">{error}</div>}
+
                 <table className="table table-bordered table-striped shadow-sm">
                     <thead className="thead-dark">
                         <tr>
@@ -67,6 +58,7 @@ const ManagePatient = () => {
                             <th>Actions</th>
                         </tr>
                     </thead>
+
                     <tbody>
                         {patients.length > 0 ? (
                             patients.map((patient) => (

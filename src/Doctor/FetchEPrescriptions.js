@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
+import React, { useState, useEffect } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+import api from "../api/apiClient";
 
 const FetchEPrescriptions = ({ appointmentId }) => {
   const [prescriptions, setPrescriptions] = useState([]);
@@ -8,99 +9,68 @@ const FetchEPrescriptions = ({ appointmentId }) => {
   const [updateForm, setUpdateForm] = useState(null);
 
   useEffect(() => {
-    const fetchEPrescriptions = async () => {
+    const loadPrescriptions = async () => {
       try {
-        const response = await fetch(`https://sdp-2200030709-production.up.railway.app/getEPrescriptionsByAppointment/${appointmentId}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch data');
-        }
-        const data = await response.json();
-        setPrescriptions(data);
+        const res = await api.get(`/getEPrescriptionsByAppointment/${appointmentId}`);
+        setPrescriptions(res.data || []);
       } catch (err) {
-        setError('No EPrescriptions provided');
+        setError("No E-Prescriptions available.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchEPrescriptions();
+    loadPrescriptions();
   }, [appointmentId]);
 
   const handleEditClick = (prescription) => {
-    setUpdateForm(prescription);
+    setUpdateForm({ ...prescription });
   };
 
   const handleUpdateChange = (e) => {
     const { name, value } = e.target;
-    setUpdateForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setUpdateForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleUpdateSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      const response = await fetch(`https://sdp-2200030709-production.up.railway.app/changeEPrescriptions/${updateForm.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updateForm),
-      });
+      const res = await api.put(`/changeEPrescriptions/${updateForm.id}`, updateForm);
 
-      if (!response.ok) {
-        throw new Error('Failed to update prescription');
-      }
-
-      const updatedPrescription = await response.json();
       setPrescriptions((prev) =>
-        prev.map((prescription) =>
-          prescription.id === updatedPrescription.id ? updatedPrescription : prescription
-        )
+        prev.map((p) => (p.id === updateForm.id ? res.data : p))
       );
-      setUpdateForm(null); // Close the form after update
+
+      setUpdateForm(null);
     } catch (err) {
-      alert('Error updating prescription: ' + err.message);
+      alert("Error updating prescription");
     }
   };
 
   const deleteEPrescription = async (id) => {
     try {
-      const response = await fetch(`https://sdp-2200030709-production.up.railway.app/deleteEPrescription/${id}`, {
-        method: 'DELETE',
-      });
+      await api.delete(`/deleteEPrescription/${id}`);
 
-      if (!response.ok) {
-        throw new Error('Failed to delete prescription');
-      }
-
-      // Remove deleted prescription from state
-      setPrescriptions((prev) =>
-        prev.filter((prescription) => prescription.id !== id)
-      );
+      setPrescriptions((prev) => prev.filter((p) => p.id !== id));
     } catch (err) {
-      alert('Error deleting prescription: ' + err.message);
+      alert("Error deleting prescription");
     }
   };
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
-  if (error) {
-    return <div className="alert alert-danger">Error: {error}</div>;
-  }
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div className="alert alert-danger">Error: {error}</div>;
 
   return (
     <div>
       <h5>EPrescriptions</h5>
+
       {prescriptions.length === 0 ? (
         <div className="alert alert-info">No prescriptions found for this appointment.</div>
       ) : (
         <div className="table-responsive">
           <table className="table table-striped table-bordered">
-            <thead className="thead-dark">
+            <thead className="table-dark">
               <tr>
                 <th>#</th>
                 <th>Medicine</th>
@@ -110,22 +80,23 @@ const FetchEPrescriptions = ({ appointmentId }) => {
               </tr>
             </thead>
             <tbody>
-              {prescriptions.map((prescription, index) => (
-                <tr key={prescription.id}>
+              {prescriptions.map((p, index) => (
+                <tr key={p.id}>
                   <td>{index + 1}</td>
-                  <td>{prescription.medicineName}</td>
-                  <td>{prescription.description}</td>
-                  <td>{prescription.quantity}</td>
+                  <td>{p.medicineName}</td>
+                  <td>{p.description}</td>
+                  <td>{p.quantity}</td>
                   <td>
                     <button
                       className="btn btn-primary btn-sm"
-                      onClick={() => handleEditClick(prescription)}
+                      onClick={() => handleEditClick(p)}
                     >
                       Edit
                     </button>
+
                     <button
-                      className="btn btn-danger btn-sm ml-2"
-                      onClick={() => deleteEPrescription(prescription.id)}
+                      className="btn btn-danger btn-sm ms-2"
+                      onClick={() => deleteEPrescription(p.id)}
                     >
                       Delete
                     </button>
@@ -139,46 +110,48 @@ const FetchEPrescriptions = ({ appointmentId }) => {
 
       {updateForm && (
         <div className="mt-4">
-          <h5>Update Prescription</h5>
+          <h5>Edit Prescription</h5>
+
           <form onSubmit={handleUpdateSubmit}>
-            <div className="form-group">
-              <label htmlFor="medicineName">Medicine Name</label>
+            <div className="form-group mb-3">
+              <label>Medicine Name</label>
               <input
                 type="text"
-                id="medicineName"
                 name="medicineName"
                 className="form-control"
                 value={updateForm.medicineName}
                 onChange={handleUpdateChange}
               />
             </div>
-            <div className="form-group">
-              <label htmlFor="description">Description</label>
+
+            <div className="form-group mb-3">
+              <label>Description</label>
               <textarea
-                id="description"
                 name="description"
                 className="form-control"
                 value={updateForm.description}
                 onChange={handleUpdateChange}
               ></textarea>
             </div>
-            <div className="form-group">
-              <label htmlFor="quantity">Quantity</label>
+
+            <div className="form-group mb-3">
+              <label>Quantity</label>
               <input
                 type="number"
-                id="quantity"
                 name="quantity"
                 className="form-control"
                 value={updateForm.quantity}
                 onChange={handleUpdateChange}
               />
             </div>
+
             <button type="submit" className="btn btn-success">
               Update
             </button>
+
             <button
               type="button"
-              className="btn btn-secondary ml-2"
+              className="btn btn-secondary ms-2"
               onClick={() => setUpdateForm(null)}
             >
               Cancel

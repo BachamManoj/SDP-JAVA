@@ -2,19 +2,19 @@ import React, { useState, useEffect, useCallback } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Modal, Button, Spinner } from 'react-bootstrap';
 import Navbar from './Navbar';
-import axios from 'axios';
+import api from '../api/apiClient';
 import { Link } from 'react-router-dom';
-import './Doctor.css'
+import './Doctor.css';
 
 const Doctor = () => {
-  const [doctors, setDoctors] = useState([]); // All doctors
-  const [filteredDoctors, setFilteredDoctors] = useState([]); // Doctors to display based on specialty filter
-  const [selectedSpecialization, setSelectedSpecialization] = useState("All"); // Selected specialty
+  const [doctors, setDoctors] = useState([]);
+  const [filteredDoctors, setFilteredDoctors] = useState([]);
+  const [selectedSpecialization, setSelectedSpecialization] = useState("All");
   const [showModal, setShowModal] = useState(false);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
+  const [profileImage, setProfileImage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [profileImage, setProfileImage] = useState(null);
 
   const specializations = [
     { id: 1, name: "Cardiology" },
@@ -28,50 +28,37 @@ const Doctor = () => {
     const fetchDoctors = async () => {
       try {
         setLoading(true);
-        const res = await axios.get('https://sdp-2200030709-production.up.railway.app/getAllDoctorsList', {}, { withCredentials: true });
+        const res = await api.get('/getAllDoctorsList');
         setDoctors(res.data);
-        setFilteredDoctors(res.data); // Initially display all doctors
-        setLoading(false);
-      } catch (err) {
-        console.error("Error fetching doctors:", err);
+        setFilteredDoctors(res.data);
+      } catch {
         setError("Failed to fetch doctor data.");
+      } finally {
         setLoading(false);
       }
     };
-
     fetchDoctors();
   }, []);
 
-  // Filter doctors based on selected specialization
   const fetchDoctorsBySpecialization = useCallback(async () => {
     if (selectedSpecialization === "All") {
-      setFilteredDoctors(doctors); // Show all doctors if no specialty is selected
+      setFilteredDoctors(doctors);
       return;
     }
 
     try {
       setLoading(true);
-      const res = await axios.post(
-        'https://sdp-2200030709-production.up.railway.app/getbyspecialty',
-        selectedSpecialization,
-        { headers: { 'Content-Type': 'text/plain' } },
-        { withCredentials: true }
-      );
-
-      if (res.data.length > 0) {
-        setFilteredDoctors(res.data);
-      } else {
-        setFilteredDoctors([]); // No doctors found for this specialization
-      }
-      setLoading(false);
-    } catch (err) {
-      console.error("Error fetching doctors by specialization:", err);
+      const res = await api.post('/getbyspecialty', selectedSpecialization, {
+        headers: { 'Content-Type': 'text/plain' }
+      });
+      setFilteredDoctors(res.data.length > 0 ? res.data : []);
+    } catch {
       setError("Failed to fetch doctor data for this specialization.");
+    } finally {
       setLoading(false);
     }
   }, [selectedSpecialization, doctors]);
 
-  // Trigger doctor fetch when specialization changes
   useEffect(() => {
     fetchDoctorsBySpecialization();
   }, [selectedSpecialization, fetchDoctorsBySpecialization]);
@@ -79,22 +66,17 @@ const Doctor = () => {
   const handleAppointment = async (doctor) => {
     try {
       setSelectedDoctor(doctor);
-      const imageRes = await axios.get(
-        `https://sdp-2200030709-production.up.railway.app/Doctorprofile/${doctor.id}/image`,
-        {
-          responseType: 'blob', 
-          withCredentials: true, 
-        }
-      );
-      setProfileImage(URL.createObjectURL(imageRes.data));
-      setShowModal(true);
-    } catch (error) {
-      console.error("Error fetching doctor's profile image:", error);
-      setProfileImage(null); 
+      const imgRes = await api.get(`/Doctorprofile/${doctor.id}/image`, {
+        responseType: 'blob'
+      });
+      setProfileImage(URL.createObjectURL(imgRes.data));
+    } catch {
+      setProfileImage(null);
+    } finally {
       setShowModal(true);
     }
   };
-  
+
   const handleClose = () => {
     setShowModal(false);
     setSelectedDoctor(null);
@@ -107,36 +89,34 @@ const Doctor = () => {
 
       {loading ? (
         <div className="text-center">
-          <Spinner animation="border" variant="primary" />
+          <Spinner animation="border" />
           <p>Loading doctors...</p>
         </div>
       ) : error ? (
         <div className="alert alert-danger text-center">{error}</div>
       ) : (
         <>
-          {/* Specialty Filter Dropdown */}
           <div className="row justify-content-center mb-4">
-            <div className="col-md-6 col-sm-8 col-12">
+            <div className="col-md-6">
               <select
                 className="form-select form-select-lg"
                 value={selectedSpecialization}
                 onChange={(e) => setSelectedSpecialization(e.target.value)}
               >
                 <option value="All">All Specializations</option>
-                {specializations.map((specialization) => (
-                  <option key={specialization.id} value={specialization.name}>
-                    {specialization.name}
+                {specializations.map((s) => (
+                  <option key={s.id} value={s.name}>
+                    {s.name}
                   </option>
                 ))}
               </select>
             </div>
           </div>
 
-          {/* Doctors Table */}
           <div className="table-responsive">
             <table className="table table-striped table-bordered table-hover">
-              <thead>
-                <tr className="table-dark">
+              <thead className="table-dark">
+                <tr>
                   <th>Name</th>
                   <th>Specialization</th>
                   <th>Action</th>
@@ -144,8 +124,8 @@ const Doctor = () => {
               </thead>
               <tbody>
                 {filteredDoctors.length > 0 ? (
-                  filteredDoctors.map((doctor, index) => (
-                    <tr key={index}>
+                  filteredDoctors.map((doctor) => (
+                    <tr key={doctor.id}>
                       <td>{doctor.name}</td>
                       <td>{doctor.specialization}</td>
                       <td>
@@ -161,7 +141,7 @@ const Doctor = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="4" className="text-center">
+                    <td colSpan="3" className="text-center">
                       No doctors available for this specialization.
                     </td>
                   </tr>
@@ -172,56 +152,36 @@ const Doctor = () => {
         </>
       )}
 
-      
-      <Modal
-        show={showModal}
-        onHide={handleClose}
-        size="lg"
-        aria-labelledby="contained-modal-title-vcenter"
-        centered
-        backdropClassName="custom-backdrop"
-      >
+      <Modal show={showModal} onHide={handleClose} centered>
         <Modal.Header closeButton className="text-white">
           <Modal.Title>Book an Appointment</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {selectedDoctor ? (
+          {selectedDoctor && (
             <>
-              {profileImage ? (
+              {profileImage && (
                 <div className="text-center mb-3">
                   <img
                     src={profileImage}
-                    alt={`${selectedDoctor.name}'s Profile`}
+                    alt="Doctor"
                     className="rounded-circle"
-                    style={{ width: '150px', height: '150px', objectFit: 'cover' }}
+                    style={{ width: 150, height: 150, objectFit: 'cover' }}
                   />
                 </div>
-              ) : (
-                <p>Profile image not available.</p>
               )}
-              <p>
-                <strong>Doctor:</strong> {selectedDoctor.name}
-              </p>
-              <p>
-                <strong>Specialization:</strong> {selectedDoctor.specialization}
-              </p>
-              <h3>Please Login to schedule your appointment.</h3>
+              <p><strong>Doctor:</strong> {selectedDoctor.name}</p>
+              <p><strong>Specialization:</strong> {selectedDoctor.specialization}</p>
+              <h4>Please login to book an appointment.</h4>
             </>
-          ) : (
-            <p>No doctor selected.</p>
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
+          <Button variant="secondary" onClick={handleClose}>Close</Button>
           <Button>
             <Link className="nav-link" to="/patientlogin">Login</Link>
           </Button>
         </Modal.Footer>
       </Modal>
-
-
     </div>
   );
 };

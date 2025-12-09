@@ -1,39 +1,37 @@
 import React from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import api from "../api/apiClient";
+import { useNavigate, Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./PharmacistDashboard.css";
-import { Link } from 'react-router-dom';
-import logo from '../images/Life1.png';
+import logo from "../images/Life1.png";
 
 const PharmacistDashboard = () => {
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     try {
-      const response = await axios.post("https://sdp-2200030709-production.up.railway.app/Pharmacistlogout");
-      if (response.status === 200) {
-        alert(response.data); 
-        navigate("/login"); 
-      }
-    } catch (error) {
-      console.error("Logout failed", error);
+      await api.post("/Pharmacistlogout");
+      localStorage.removeItem("token");
+      navigate("/login");
+    } catch (err) {
       alert("Logout failed. Please try again.");
     }
   };
 
   return (
     <div>
-      <div className="navbar-container" style={{ backgroundColor: 'ffff' }}>
+      <div className="navbar-container" style={{ backgroundColor: "#373af0ff" }}>
         <nav className="navbar">
           <h1 className="navbar-title">Pharmacist Dashboard</h1>
         </nav>
       </div>
+
       <div className="custom-dashboard-container">
         <div className="custom-sidebar">
           <div className="custom-logo-container">
             <img src={logo} alt="Hospital Logo" className="custom-hospital-logo" />
           </div>
+
           <div className="custom-navbar-center">
             <Link className="custom-navbar-item" to="/pharmacistHomePage">Home</Link>
             <Link className="custom-navbar-item" to="/trackOrder">Accepted Orders</Link>
@@ -41,11 +39,9 @@ const PharmacistDashboard = () => {
             <Link className="custom-navbar-item" to="/pharmacistMedicineList">Medicine List</Link>
             <Link className="custom-navbar-item" to="/viewPaymentsByEPharmacist">E-Prescription Payments</Link>
             <Link className="custom-navbar-item" to="/viewPaymentsByEPharmacist">Payments</Link>
-            <Link className="custom-navbar-item" to="/pharmacistHomePage">Support</Link>
-            <button
-              className="custom-navbar-item custom-logout-button"
-              onClick={handleLogout}
-            >
+            <Link className="custom-navbar-item" to="/pharmacistSupport">Support</Link>
+
+            <button onClick={handleLogout} className="custom-navbar-item custom-logout-button">
               Logout
             </button>
           </div>

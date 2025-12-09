@@ -1,101 +1,102 @@
-import React, { useState, useEffect } from 'react';
-import { Document, Page } from 'react-pdf';
-import { pdfjs } from 'react-pdf';
+import React, { useState, useEffect } from "react";
+import { Document, Page, pdfjs } from "react-pdf";
+import api from "../api/apiClient";
 
-pdfjs.GlobalWorkerOptions.workerSrc = '/pdf.worker.min.js';
+// PDF worker setup
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
-const MedicalReports = async (patientId) => {
-  try {
-    const response = await fetch('https://sdp-2200030709-production.up.railway.app/allAppointmentReports/1', {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/pdf',
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to fetch PDF');
-    }
-
-    const pdfBlob = await response.blob();
-    return URL.createObjectURL(pdfBlob); 
-  } catch (error) {
-    throw new Error(error.message);
-  }
-};
-
-const PdfView = ({ patientId = 1 }) => {
+const PdfView = ({ appointmentId }) => {
   const [pdfUrl, setPdfUrl] = useState(null);
   const [numPages, setNumPages] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const loadPdf = async (id) => {
+  // Get base URL from axios client (no hardcoding)
+  const BASE_URL = api.defaults.baseURL;
+
+  // -------------------------------------------------------------
+  // Load PDF Blob from backend with JWT attached via api instance
+  // -------------------------------------------------------------
+  const fetchMedicalReport = async () => {
     try {
-      setLoading(true);
-      const url = await MedicalReports(id);
-      setPdfUrl(url);
+      const response = await api.get(`/allAppointmentReports/${appointmentId}`, {
+        responseType: "blob",
+      });
+
+      // Create Blob URL for PDF viewer
+      const pdfBlob = new Blob([response.data], { type: "application/pdf" });
+      return URL.createObjectURL(pdfBlob);
     } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      throw new Error("Failed to load PDF");
     }
   };
 
+  // Load PDF on mount or appointmentId change
   useEffect(() => {
-    loadPdf(patientId);
-  }, [patientId]);
+    const loadPdf = async () => {
+      setLoading(true);
+      setError(null);
 
-  const onLoadSuccess = ({ numPages }) => {
+      try {
+        const url = await fetchMedicalReport();
+        setPdfUrl(url); // URL for react-pdf <Document />
+      } catch (err) {
+        setError(err.message);
+        setPdfUrl(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (appointmentId) loadPdf();
+  }, [appointmentId]);
+
+  // React-PDF loaded metadata
+  const onDocumentLoadSuccess = ({ numPages }) => {
     setNumPages(numPages);
+    setPageNumber(1);
   };
 
-  const goToNextPage = () => {
-    if (pageNumber < numPages) {
-      setPageNumber(pageNumber + 1);
-    }
-  };
-
-  const goToPreviousPage = () => {
-    if (pageNumber > 1) {
-      setPageNumber(pageNumber - 1);
-    }
-  };
-
-  if (loading) {
-    return <p>Loading PDF...</p>;
-  }
-
-  if (error) {
-    return <p>Error: {error}</p>;
-  }
+  // -------------------------------------------------------------
+  // UI RENDER
+  // -------------------------------------------------------------
+  if (loading) return <p>Loading PDF...</p>;
+  if (error) return <p style={{ color: "red" }}>Error: {error}</p>;
 
   return (
-    <div>
-      <h1>Appointment Report</h1>
+    <div style={{ textAlign: "center", padding: 20 }}>
+      <h2>Appointment Report</h2>
+
       {pdfUrl ? (
-        <div>
-          <Document
-            file={pdfUrl}
-            onLoadSuccess={onLoadSuccess}
-            loading={<p>Loading PDF...</p>}
-          >
-            <Page pageNumber={pageNumber} />
+        <>
+          <Document file={pdfUrl} onLoadSuccess={onDocumentLoadSuccess}>
+            <Page pageNumber={pageNumber} width={600} />
           </Document>
 
-          <div>
-            <button onClick={goToPreviousPage} disabled={pageNumber <= 1}>
+          {/* Pagination */}
+          <div style={{ marginTop: 20 }}>
+            <button
+              onClick={() => setPageNumber(pageNumber - 1)}
+              disabled={pageNumber <= 1}
+            >
               Previous
             </button>
-            <span>Page {pageNumber} of {numPages}</span>
-            <button onClick={goToNextPage} disabled={pageNumber >= numPages}>
+
+            <span style={{ margin: "0 15px" }}>
+              Page {pageNumber} of {numPages}
+            </span>
+
+            <button
+              onClick={() => setPageNumber(pageNumber + 1)}
+              disabled={pageNumber >= numPages}
+            >
               Next
             </button>
           </div>
-        </div>
+        </>
       ) : (
-        <p>No PDF available</p>
+        <p>No PDF Found</p>
       )}
     </div>
   );

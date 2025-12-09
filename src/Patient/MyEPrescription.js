@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../api/apiClient";       // ✅ CENTRALIZED API
 import { useNavigate } from "react-router-dom";
 import PatientDashboard from "./PatientDashboard";
 
@@ -8,127 +8,113 @@ const MyEPrescription = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [patientId, setPatientId] = useState(null);
+
   const [selectedAppointmentId, setSelectedAppointmentId] = useState(null);
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [showAddressInput, setShowAddressInput] = useState(false);
   const navigate = useNavigate();
 
+  // ---------------------------------------------------
+  // FETCH PATIENT DETAILS
+  // ---------------------------------------------------
   useEffect(() => {
-    const fetchPatientDetails = async () => {
+    const loadPatient = async () => {
       try {
-        const response = await axios.get(
-          "https://sdp-2200030709-production.up.railway.app/getPatientDetails",
-          { withCredentials: true }
-        );
-        if (response.data && response.data.id) {
-          setPatientId(response.data.id);
-        } else {
-          setError("Patient details not found.");
-        }
-      } catch (error) {
-        setError("Error fetching patient details.");
-        console.error(error);
+        const res = await api.get("/getPatientDetails");
+        if (res.data?.id) setPatientId(res.data.id);
+      } catch (err) {
+        setError("Unable to load patient details.");
       }
     };
-
-    fetchPatientDetails();
+    loadPatient();
   }, []);
 
+  // ---------------------------------------------------
+  // FETCH ePRESCRIPTIONS
+  // ---------------------------------------------------
   useEffect(() => {
-    if (patientId) {
-      const fetchEPrescriptions = async () => {
-        try {
-          const response = await axios.get(
-            `http://localhost:9999/viewMyEPrescriptionByPatient/${patientId}`,
-            { withCredentials: true }
-          );
-          if (response.data) {
-            setEPrescriptions(response.data);
-          }
-        } catch (error) {
-          setError("Error fetching ePrescriptions.");
-          console.error(error);
-        } finally {
-          setLoading(false);
-        }
-      };
+    if (!patientId) return;
 
-      fetchEPrescriptions();
-    }
+    const loadEP = async () => {
+      try {
+        const res = await api.get(`/viewMyEPrescriptionByPatient/${patientId}`);
+        setEPrescriptions(res.data || []);
+      } catch (err) {
+        setError("Unable to load ePrescriptions.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadEP();
   }, [patientId]);
 
+  // ---------------------------------------------------
+  // ACCEPT & PAY
+  // ---------------------------------------------------
   const handleAcceptAndPay = async () => {
-    if (!deliveryAddress) {
-      alert("Delivery address is required.");
-      return;
+    if (!deliveryAddress.trim()) {
+      return alert("Delivery address required");
     }
 
     try {
-      const orderData = {
+      // ✔ CREATE ORDER  
+      await api.post("/create", {
         appointment: { id: selectedAppointmentId },
         address: deliveryAddress,
-      };
-
-      await axios.post("http://localhost:9999/create", orderData, {
-        withCredentials: true,
       });
 
-      const response = await axios.get(
-        `http://localhost:9999/acceptandgetEPrescriptionPrice/${selectedAppointmentId}`,
-        { withCredentials: true }
+      // ✔ GET PRICE  
+      const priceRes = await api.get(
+        `/acceptandgetEPrescriptionPrice/${selectedAppointmentId}`
       );
 
-      if (response.data) {
-        const paymentAmount = response.data;
-        navigate(`/billing`, {
-          state: { appointmentId: selectedAppointmentId, paymentAmount },
-        });
-      }
-    } catch (error) {
-      setError("Error processing payment.");
-      console.error(error);
+      navigate("/billing", {
+        state: {
+          appointmentId: selectedAppointmentId,
+          paymentAmount: priceRes.data,
+        },
+      });
+    } catch (err) {
+      setError("Payment processing failed.");
     } finally {
       setShowAddressInput(false);
       setDeliveryAddress("");
     }
   };
 
-  const renderEPrescriptions = () => {
-    if (ePrescriptions.length === 0) {
-      return <div>No e-prescriptions found for this patient.</div>;
-    }
+  // ---------------------------------------------------
+  // RENDER EPRESCRIPTIONS GROUPED BY APPOINTMENT
+  // ---------------------------------------------------
+  const renderEP = () => {
+    if (ePrescriptions.length === 0)
+      return <p>No ePrescriptions found.</p>;
 
-    const groupedByAppointment = ePrescriptions.reduce((acc, ePrescription) => {
-      const { appointment } = ePrescription;
-      const appointmentId = appointment.id;
-      if (!acc[appointmentId]) {
-        acc[appointmentId] = [];
-      }
-      acc[appointmentId].push(ePrescription);
+    const grouped = ePrescriptions.reduce((acc, ep) => {
+      acc[ep.appointment.id] = acc[ep.appointment.id] || [];
+      acc[ep.appointment.id].push(ep);
       return acc;
     }, {});
 
-    return Object.keys(groupedByAppointment).map((appointmentId) => {
-      const appointment = groupedByAppointment[appointmentId][0].appointment;
-      const allNotAccepted = groupedByAppointment[appointmentId].every(
-        (ePrescription) => !ePrescription.accept
-      );
+    return Object.keys(grouped).map((appointmentId) => {
+      const group = grouped[appointmentId];
+      const appointment = group[0].appointment;
+      const allNotAccepted = group.every((ep) => !ep.accept);
 
       return (
-        <div key={appointmentId} className="ePrescription-group mb-4">
-          <h4>Appointment ID: {appointmentId}</h4>
+        <div key={appointmentId} className="mb-4">
+          <h4>Appointment: {appointmentId}</h4>
+
+          {/* Delivery Address Input */}
           {showAddressInput && selectedAppointmentId === appointmentId && (
-            <div className="address-input mt-3">
-              <h5>Enter Delivery Address</h5>
+            <div className="my-3">
               <input
-                type="text"
-                className="form-control my-3"
+                className="form-control my-2"
                 placeholder="Delivery Address"
                 value={deliveryAddress}
                 onChange={(e) => setDeliveryAddress(e.target.value)}
               />
               <button className="btn btn-primary" onClick={handleAcceptAndPay}>
-                Submit and Pay
+                Submit & Pay
               </button>
               <button
                 className="btn btn-secondary ms-2"
@@ -138,35 +124,32 @@ const MyEPrescription = () => {
               </button>
             </div>
           )}
-          <table className="table table-striped">
+
+          {/* Table */}
+          <table className="table table-striped mt-3">
             <thead>
               <tr>
-                <th scope="col">Medicine Name</th>
-                <th scope="col">Doctor</th>
-                <th scope="col">Quantity</th>
-                <th scope="col">Description</th>
-                <th scope="col">Issued On</th>
+                <th>Medicine</th>
+                <th>Doctor</th>
+                <th>Qty</th>
+                <th>Description</th>
+                <th>Issued On</th>
               </tr>
             </thead>
             <tbody>
-              {groupedByAppointment[appointmentId].map(
-                (ePrescription, index) => (
-                  <tr key={index}>
-                    <td>{ePrescription.medicineName}</td>
-                    <td>{ePrescription.doctor.name}</td>
-                    <td>{ePrescription.quantity}</td>
-                    <td>{ePrescription.description}</td>
-                    <td>
-                      {new Date(
-                        ePrescription.appointment.date
-                      ).toLocaleDateString()}
-                    </td>
-                  </tr>
-                )
-              )}
+              {group.map((ep, i) => (
+                <tr key={i}>
+                  <td>{ep.medicineName}</td>
+                  <td>{ep.doctor.name}</td>
+                  <td>{ep.quantity}</td>
+                  <td>{ep.description}</td>
+                  <td>{new Date(ep.appointment.date).toLocaleDateString()}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
 
+          {/* Accept Button */}
           {appointment.isCompleted && (
             <div className="text-center">
               {allNotAccepted ? (
@@ -177,7 +160,7 @@ const MyEPrescription = () => {
                     setShowAddressInput(true);
                   }}
                 >
-                  Accept and Pay
+                  Accept & Pay
                 </button>
               ) : (
                 <button className="btn btn-secondary" disabled>
@@ -191,24 +174,24 @@ const MyEPrescription = () => {
     });
   };
 
+  // ---------------------------------------------------
+  // UI
+  // ---------------------------------------------------
   return (
     <div className="dashboard-container d-flex">
       <PatientDashboard />
-      <div className="container">
+
+      <div className="container" style={{ marginTop: 80 }}>
         <h2 className="text-center mb-4">My ePrescriptions</h2>
 
         {loading ? (
           <div className="text-center">
-            <div className="spinner-border text-primary" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
+            <div className="spinner-border text-primary" />
           </div>
         ) : error ? (
-          <div className="alert alert-danger" role="alert">
-            {error}
-          </div>
+          <div className="alert alert-danger">{error}</div>
         ) : (
-          renderEPrescriptions()
+          renderEP()
         )}
       </div>
     </div>

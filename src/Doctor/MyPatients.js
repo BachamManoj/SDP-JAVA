@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import DoctorDashboard from './DoctorDashboard';
-import PrescriptionForm from './PrescriptionForm';
-import FetchEPrescriptions from './FetchEPrescriptions';
-import DoctorChat from './DoctorChat';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import "bootstrap/dist/css/bootstrap.min.css";
+import DoctorDashboard from "./DoctorDashboard";
+import PrescriptionForm from "./PrescriptionForm";
+import FetchEPrescriptions from "./FetchEPrescriptions";
+import DoctorChat from "./DoctorChat";
+import { useNavigate } from "react-router-dom";
+import api from "../api/apiClient";
 
 const MyPatients = () => {
   const [patients, setPatients] = useState([]);
@@ -16,47 +16,45 @@ const MyPatients = () => {
   const [showPrescriptionForm, setShowPrescriptionForm] = useState(false);
   const [showEPrescription, setShowEPrescription] = useState(null);
   const [selectedPatientEmail, setSelectedPatientEmail] = useState(null);
+
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchDoctorDetails = async () => {
+    const fetchDetails = async () => {
       try {
-        const doctorResponse = await axios.get('https://sdp-2200030709-production.up.railway.app/getDoctorDetails', {
-          withCredentials: true,
-        });
+        const doctorRes = await api.get("/getDoctorDetails");
+        setDoctor(doctorRes.data);
 
-        if (doctorResponse.data) {
-          setDoctor(doctorResponse.data);
-          const appointmentsResponse = await axios.get(
-            `https://sdp-2200030709-production.up.railway.app/getPatientAppointments/${doctorResponse.data.id}`
-          );
-          setPatients(appointmentsResponse.data || []);
-        }
-      } catch (error) {
-        setError('Error fetching doctor or patient data.');
-        console.error(error);
+        const appointmentRes = await api.get(
+          "/getDoctorAppointments"
+        );
+
+        setPatients(appointmentRes.data || []);
+      } catch (err) {
+        console.error("Error:", err);
+        setError("Error fetching doctor or patient data.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchDoctorDetails();
+    fetchDetails();
   }, []);
 
   const handlePrescriptionClick = (patient) => {
-    if (patient?.id && patient.patient?.id && doctor?.id) {
-      const prescriptionDetails = {
-        appointmentId: patient.id,
-        patientId: patient.patient.id,
-        doctorId: doctor.id,
-        patientEmail: patient.patient.email,
-      };
-      setSelectedPatient(prescriptionDetails);
-      setShowPrescriptionForm(true);
-    } else {
-      console.error('Missing required data for prescription.');
-      alert('Unable to provide prescription. Required details are missing.');
+    if (!patient?.id || !patient.patient?.id || !doctor?.id) {
+      alert("Unable to provide prescription.");
+      return;
     }
+
+    setSelectedPatient({
+      appointmentId: patient.id,
+      patientId: patient.patient.id,
+      doctorId: doctor.id,
+      patientEmail: patient.patient.email,
+    });
+
+    setShowPrescriptionForm(true);
   };
 
   const handleChatClick = (email) => {
@@ -64,29 +62,24 @@ const MyPatients = () => {
   };
 
   const handleVideoCallClick = (appointmentId) => {
-    navigate('/onlineVideoCall', { state: { appointmentID: appointmentId } });
+    navigate("/onlineVideoCall", { state: { appointmentID: appointmentId } });
   };
 
   return (
-    <div className="dashboard-container d-flex" style={{ height: '100vh' }}>
+    <div className="dashboard-container d-flex" style={{ height: "100vh" }}>
       <DoctorDashboard />
+
       <div className="container" style={{ marginTop: 100, flex: 1 }}>
         <h2 className="text-center mb-4">My Patients</h2>
 
         {loading ? (
           <div className="text-center">
-            <div className="spinner-border text-primary" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
+            <div className="spinner-border text-primary" />
           </div>
         ) : error ? (
-          <div className="alert alert-danger" role="alert">
-            {error}
-          </div>
+          <div className="alert alert-danger">{error}</div>
         ) : patients.length === 0 ? (
-          <div className="alert alert-info" role="alert">
-            No patients found.
-          </div>
+          <div className="alert alert-info">No patients found.</div>
         ) : (
           <div className="table-responsive">
             <table className="table table-hover table-striped">
@@ -99,14 +92,18 @@ const MyPatients = () => {
                   <th>Actions</th>
                 </tr>
               </thead>
+
               <tbody>
-                {patients.map((patient, index) => (
-                  <React.Fragment key={index}>
+                {patients.map((patient) => (
+                  <React.Fragment key={patient.id}>
                     <tr>
                       <td>{patient.patient.firstName}</td>
-                      <td>{new Date(patient.date).toLocaleDateString('en-CA')}</td>
+                      <td>
+                        {new Date(patient.date).toLocaleDateString("en-CA")}
+                      </td>
                       <td>{patient.timeSlot}</td>
-                      <td>{patient.isCompleted ? 'Yes' : 'No'}</td>
+                      <td>{patient.isCompleted ? "Yes" : "No"}</td>
+
                       <td>
                         {patient.isCompleted ? (
                           <>
@@ -116,28 +113,37 @@ const MyPatients = () => {
                             >
                               Provide Prescription
                             </button>
+
                             <button
-                              className="btn btn-secondary"
+                              className="btn btn-secondary me-2"
                               onClick={() =>
                                 setShowEPrescription(
-                                  showEPrescription === patient.id ? null : patient.id
+                                  showEPrescription === patient.id
+                                    ? null
+                                    : patient.id
                                 )
                               }
                             >
-                              {showEPrescription === patient.id ? 'Hide' : 'Show'}
+                              {showEPrescription === patient.id
+                                ? "Hide"
+                                : "Show"}
                             </button>
+
                             <button
                               className="btn btn-link"
-                              onClick={() => handleChatClick(patient.patient.email)}
+                              onClick={() =>
+                                handleChatClick(patient.patient.email)
+                              }
                             >
                               Chat
                             </button>
                           </>
                         ) : (
                           <span className="text-warning">
-                            Complete the consultation to enable additional options.
+                            Complete consultation to enable options.
                           </span>
                         )}
+
                         {!patient.isCompleted && (
                           <button
                             className="btn btn-success ms-2"
@@ -148,6 +154,7 @@ const MyPatients = () => {
                         )}
                       </td>
                     </tr>
+
                     {showEPrescription === patient.id && (
                       <tr>
                         <td colSpan="5">
@@ -163,26 +170,26 @@ const MyPatients = () => {
         )}
       </div>
 
+      {selectedPatientEmail && (
+        <div
+          style={{
+            flex: 0.55,
+            minHeight: "100vh",
+            padding: "20px",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <DoctorChat receiver={selectedPatientEmail} />
+        </div>
+      )}
+
       {showPrescriptionForm && selectedPatient && (
         <div className="prescription-modal">
           <PrescriptionForm
             selectedPatient={selectedPatient}
             onClose={() => setShowPrescriptionForm(false)}
           />
-        </div>
-      )}
-
-      {selectedPatientEmail && (
-        <div
-          style={{
-            flex: 0.55,
-            minHeight: '100vh',
-            padding: '20px',
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-        >
-          <DoctorChat receiver={selectedPatientEmail} />
         </div>
       )}
     </div>
